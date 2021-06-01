@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name = "solorank_unrank_rankarray">
+        <item>배치</item>
+    </string-array>
+
+    <string-array name = "solorank_iron_rankarray">
+        <item>아이언 전체</item>
+        <item>아이언 1</item>
+        <item>아이언 2</item>
+        <item>아이언 3</item>
+        <item>아이언 4</item>
+    </string-array>
+
+    <string-array name = "solorank_bronze_rankarray">
+        <item>브론즈 전체</item>
+        <item>브론즈 1</item>
+        <item>브론즈 2</item>
+        <item>브론즈 3</item>
+        <item>브론즈 4</item>
+    </string-array>
+
+    <string-array name = "solorank_silver_rankarray">
+        <item>실버 전체</item>
+        <item>실버 1</item>
+        <item>실버 2</item>
+        <item>실버 3</item>
+        <item>실버 4</item>
+    </string-array>
+
+    <string-array name = "solorank_gold_rankarray">
+        <item>골드 전체</item>
+        <item>골드 1</item>
+        <item>골드 2</item>
+        <item>골드 3</item>
+        <item>골드 4</item>
+    </string-array>
+
+    <string-array name = "solorank_platinum_rankarray">
+        <item>플래티넘 전체</item>
+        <item>플래티넘 1</item>
+        <item>플래티넘 2</item>
+        <item>플래티넘 3</item>
+        <item>플래티넘 4</item>
+    </string-array>
+
+    <string-array name = "solorank_diamond_rankarray">
+        <item>다이아 전체</item>
+        <item>다이아 1</item>
+        <item>다이아 2</item>
+        <item>다이아 3</item>
+        <item>다이아 4</item>
+    </string-array>
+
+    <string-array name = "freerank_unrank_rankarray">
+        <item>배치</item>
+    </string-array>
+
+    <string-array name = "freerank_iron_rankarray">
+        <item>아이언 전체</item>
+        <item>아이언 1</item>
+        <item>아이언 2</item>
+        <item>아이언 3</item>
+        <item>아이언 4</item>
+    </string-array>
+
+    <string-array name = "freerank_bronze_rankarray">
+        <item>브론즈 전체</item>
+        <item>브론즈 1</item>
+        <item>브론즈 2</item>
+        <item>브론즈 3</item>
+        <item>브론즈 4</item>
+    </string-array>
+
+    <string-array name = "freerank_silver_rankarray">
+        <item>실버 전체</item>
+        <item>실버 1</item>
+        <item>실버 2</item>
+        <item>실버 3</item>
+        <item>실버 4</item>
+    </string-array>
+
+    <string-array name = "freerank_gold_rankarray">
+        <item>골드 전체</item>
+        <item>골드 1</item>
+        <item>골드 2</item>
+        <item>골드 3</item>
+        <item>골드 4</item>
+    </string-array>
+
+    <string-array name = "freerank_platinum_rankarray">
+        <item>플래티넘 전체</item>
+        <item>플래티넘 1</item>
+        <item>플래티넘 2</item>
+        <item>플래티넘 3</item>
+        <item>플래티넘 4</item>
+    </string-array>
+
+    <string-array name = "freerank_diamond_rankarray">
+        <item>다이아 전체</item>
+        <item>다이아 1</item>
+        <item>다이아 2</item>
+        <item>다이아 3</item>
+        <item>다이아 4</item>
+    </string-array>
+
+    <string-array name = "freerank_master_rankarray">
+        <item>마스터</item>
+    </string-array>
+    <string-array name = "freerank_grandmaster_rankarray">
+        <item>그랜드 마스터</item>
+    </string-array>
+    <string-array name = "freerank_challenger_rankarray">
+        <item>챌린저</item>
+    </string-array>
+
+    <string-array name = "normalgame_array">
+        <item>일반게임</item>
+        <item>칼바람 나락</item>
+        <item>우르프</item>
+        <item>단일 모드</item>
+        <item>돌격! 넥서스</item>
+    </string-array>
+
+    <string-array name = "solorank_position_array">
+        <item>모든 포지션</item>
+        <item>탑</item>
+        <item>정글</item>
+        <item>미드</item>
+        <item>원딜</item>
+        <item>서폿</item>
+    </string-array>
+
+</resources>

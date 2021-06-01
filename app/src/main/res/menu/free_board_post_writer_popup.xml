@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/btn_postRetouch"
+        android:title="내용 수정" />
+    <item
+        android:id="@+id/btn_imageRetouch"
+        android:title="사진 수정(추가)" />
+    <item
+        android:id="@+id/btn_postDel"
+        android:title="글 삭제" />
+
+</menu>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "526859486137",
+    "project_id": "lolgether",
+    "storage_bucket": "lolgether.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526859486137:android:998c612d92e8887328ac68",
+        "android_client_info": {
+          "package_name": "org.jeonfeel.withlol2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "526859486137-9dhcsgoecmjkb6e5l3vkamnc2io859g2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.jeonfeel.withlol2",
+            "certificate_hash": "d78ccd2e2bf1899aafe57b6fe071e0c87247f243"
+          }
+        },
+        {
+          "client_id": "526859486137-151le92t9ukbrchlki6om1ou4vdt1jrk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAdt2n3IRb8JH_tO0X0aX4VqNw0P1E5RU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "526859486137-151le92t9ukbrchlki6om1ou4vdt1jrk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

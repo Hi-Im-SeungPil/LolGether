@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".activity.Activity_watchingDuoBoardPost">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/comment_card_view">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp">
+            <ImageView
+                android:id="@+id/img_commentSummonerTier"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+            <TextView
+                android:id="@+id/tv_commentSummonerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Lv 2400 김찬호"
+                android:textSize="17sp"
+                android:textColor="#323232"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="8dp"
+                android:fontFamily="@font/nanumroundeb"/>
+<!--            <Button-->
+<!--                android:id="@+id/btn_commentOfComment"-->
+<!--                android:layout_width="25dp"-->
+<!--                android:layout_height="25dp"-->
+<!--                android:background="@drawable/img_commentofcomment"-->
+<!--                android:layout_marginTop="2dp"/>-->
+            <Button
+                android:id="@+id/btn_commentDel"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/img_commentdel"/>
+            <Button
+                android:id="@+id/btn_commentReport"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/img_commentreport"/>
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_commentContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="저랑 같이 해요"
+            android:paddingLeft="12dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/nanumroundb"/>
+
+        <TextView
+            android:id="@+id/tv_commentWriteDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#C5C5C5"
+            android:gravity="right"
+            android:text="방금 전"
+            android:layout_marginRight="13dp" />
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/btn_watchingMyPost"
+        android:title="내 글 보기" />
+    <item
+        android:id="@+id/btn_summonerChange"
+        android:title="소환사 변경" />
+    <item
+        android:id="@+id/btn_setNotification"
+        android:title="알림 설정" />
+    <item
+        android:id="@+id/btn_logOut"
+        android:title="로그아웃" />
+
+</menu>

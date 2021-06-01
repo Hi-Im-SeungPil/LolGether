@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">롤게더.</string>
+    <string name="facebook_app_id">1179570149125261</string>
+    <string name="fb_login_protocol_scheme">fb1179570149125261</string>
+</resources>

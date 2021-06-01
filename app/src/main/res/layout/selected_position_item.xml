@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/duoboardWriteRankSpinnerNormalItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_position"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:textSize="17sp"
+        android:text="모든 포지션"
+        android:textColor="#424141"
+        android:gravity="center"
+        android:fontFamily="@font/nanumroundeb"/>
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/img_arrow_down"
+        android:layout_gravity="center"
+        android:layout_marginRight="10dp"/>
+
+</LinearLayout>
