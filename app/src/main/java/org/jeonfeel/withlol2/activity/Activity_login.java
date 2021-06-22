@@ -74,7 +74,7 @@ public class Activity_login extends AppCompatActivity {
 
         btn_googleLogin = findViewById(R.id.btn_googleLogin);
         btn_facebookLogin = findViewById(R.id.btn_facebookLogin);
-//        btn_kakaoLogin = findViewById(R.id.btn_kakaoLogin);
+//      btn_kakaoLogin = findViewById(R.id.btn_kakaoLogin);
         googleSignIn();
         facebookSignIn();
 
@@ -86,12 +86,7 @@ public class Activity_login extends AppCompatActivity {
                 signIn();
             }
         });
-//        btn_kakaoLogin.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                kakaoLogin();
-//            }
-//        });
+
     }
 
     public void googleSignIn(){

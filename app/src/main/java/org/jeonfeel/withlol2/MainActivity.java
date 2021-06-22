@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
 
         currentUserUid = mAuth.getUid();
 
+        mDatabase.child("hello").child(currentUserUid).setValue("hello firebase");
+
         setSummonerInfo();
 
         btn_idSearch.setOnClickListener(new View.OnClickListener() {
@@ -261,15 +263,12 @@ public class MainActivity extends AppCompatActivity {
                         img_userTier.setImageResource(R.drawable.ch);
                         break;
                 }
-
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
     }
-
-
     //현재 로그인한 사용자의 Uid
     public static String getCurrentUserUid() {
         return currentUserUid;
@@ -323,10 +322,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "인터넷 연결을 확인해 주세요!!", Toast.LENGTH_SHORT).show();
             return;
         }
-
         String url = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + currentSummonerName + "?api_key=RGAPI-11e273ee-915a-4ab6-80e6-7a8ce0ed3905";
         getLoLId = new GetLoLId();
-
         try {
             json_userId = new JSONObject();
             json_userId = getLoLId.execute(url).get();

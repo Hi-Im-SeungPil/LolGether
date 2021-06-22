@@ -222,7 +222,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
             imgExistence = 0;
 
             mDatabase.child("freeBoard").child(postId).setValue(saveFreeBoardPost);
-            mDatabase.child("users").child(currentUserUid).child("freeBoardPost").child(postId).setValue(postId);
+            mDatabase.child("users").child(currentUserUid).child("freeBoardPost").child(postId).child("postId").setValue(postId);
 
             Activity_freeBoard ac = (Activity_freeBoard) Activity_freeBoard.activity;
             ac.finish();

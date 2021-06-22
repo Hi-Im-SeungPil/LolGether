@@ -1,10 +1,7 @@
 package org.jeonfeel.withlol2.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDialog;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -79,6 +75,8 @@ public class Activity_setUserInfo extends AppCompatActivity {
 
         Uid = mAuth.getUid();
         uEmail = mAuth.getCurrentUser().getEmail();
+
+        Log.d("gggg",Uid);
 
         btn_setSearchUserId.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,6 +163,9 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 mDatabase.child("users").child(UID).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() { // firebase insert
                     @Override
                     public void onSuccess(Void aVoid) {
+                        Intent intent = new Intent(getApplication(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
                         Toast.makeText(Activity_setUserInfo.this, "소환사 정보 설정이 완료되었습니다!", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -254,9 +255,6 @@ public class Activity_setUserInfo extends AppCompatActivity {
         public void setBtn_start(){
             if(check == 1) {
                 writeNewUser(Uid, uEmail, summonerName, tier, rank, wins, losses);
-                Intent intent = new Intent(getApplication(), MainActivity.class);
-                startActivity(intent);
-                finish();
             }else if(check == 0){
                 Toast.makeText(getApplication(), "소환사 정보를 등록해 주세요", Toast.LENGTH_SHORT).show();
             }
