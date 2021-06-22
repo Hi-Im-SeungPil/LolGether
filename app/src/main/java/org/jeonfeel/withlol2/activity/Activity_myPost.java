@@ -160,11 +160,9 @@ public class Activity_myPost extends AppCompatActivity {
                     for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                         if(pagingFreePostId.isEmpty()){
                             pagingFreePostId = userSnapshot.child("postId").getValue(String.class);
-                            Log.d("arrayCheck",pagingFreePostId+"");
                         }
                         String postId = userSnapshot.child("postId").getValue(String.class);
                         ArrayFreePostId.add(0,postId);
-                        Log.d("arrayCheck",ArrayFreePostId.get(0)+"");
                     }
                 }
                 setMyFreePost();
@@ -285,7 +283,6 @@ public class Activity_myPost extends AppCompatActivity {
                     intent.putExtra("summonerName", item.getSummonerName());
                     intent.putExtra("postDate",postDate);
                     intent.putExtra("boardTitle", item.getBoardTitle());
-                    intent.putExtra("itemPosition", position);
                     intent.putExtra("commentCount", item.getCommentCount());
                     intent.putExtra("selectedPosition",item.getSelectedPosition());
                     startActivity(intent);
@@ -323,14 +320,14 @@ public class Activity_myPost extends AppCompatActivity {
 
                 if(item != null) {
                     Intent intent = new Intent(getApplication(), Activity_watchingFreeBoardPost.class);
-                    intent.putExtra("writtenId", item.getId());
-                    intent.putExtra("writtenUid", item.getWriterUid());
-                    intent.putExtra("writtenTitle", item.getTitle());
-                    intent.putExtra("writtenContent", item.getContent());
+                    intent.putExtra("postId", item.getId());
+                    intent.putExtra("writerUid", item.getWriterUid());
+                    intent.putExtra("postTitle", item.getTitle());
+                    intent.putExtra("postContent", item.getContent());
                     intent.putExtra("summonerTier", item.getTier());
                     intent.putExtra("summonerName", item.getSummonerName());
-                    intent.putExtra("postDate",postDate);
-                    intent.putExtra("itemPosition", position);
+                    intent.putExtra("postDate",item.getPostWrittenDate());
+                    intent.putExtra("imgExistence", item.getImageExistence());
                     intent.putExtra("commentCount", item.getCommentCount());
                     startActivity(intent);
                 }
@@ -444,17 +441,17 @@ public class Activity_myPost extends AppCompatActivity {
                         for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                             saveDuoBoardPost = userSnapshot.getValue(SaveDuoBoardPost.class);
 
-                            _id = saveDuoBoardPost.getId();
-                            summonerTier = saveDuoBoardPost.getSummonerTier();
-                            writtenTier = saveDuoBoardPost.getPostTier();
-                            writtenTitle = saveDuoBoardPost.getTitle();
-                            writtenContent = saveDuoBoardPost.getContent();
-                            summonerName = saveDuoBoardPost.getSummonerName();
-                            postDate = saveDuoBoardPost.getPostDate();
-                            commentCount = saveDuoBoardPost.getCommentCount();
-                            writtenUid = saveDuoBoardPost.getUid();
-                            selectedMic = "off";
-                            boardTitle = saveDuoBoardPost.getBoardTitle();
+                            String _id = saveDuoBoardPost.getId();
+                            String summonerTier = saveDuoBoardPost.getSummonerTier();
+                            String writtenTier = saveDuoBoardPost.getPostTier();
+                            String writtenTitle = saveDuoBoardPost.getTitle();
+                            String writtenContent = saveDuoBoardPost.getContent();
+                            String summonerName = saveDuoBoardPost.getSummonerName();
+                            long postDate = saveDuoBoardPost.getPostDate();
+                            int commentCount = saveDuoBoardPost.getCommentCount();
+                            String writtenUid = saveDuoBoardPost.getUid();
+                            String selectedMic = "off";
+                            String boardTitle = saveDuoBoardPost.getBoardTitle();
 
                             Item_duoBoard Item = new Item_duoBoard(_id, writtenUid, summonerTier, writtenTier, writtenTitle, writtenContent
                                     , summonerName, selectedMic,selectedPosition,boardTitle,

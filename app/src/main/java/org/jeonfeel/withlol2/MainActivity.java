@@ -106,8 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
         currentUserUid = mAuth.getUid();
 
-        mDatabase.child("hello").child(currentUserUid).setValue("hello firebase");
-
         setSummonerInfo();
 
         btn_idSearch.setOnClickListener(new View.OnClickListener() {
