@@ -132,7 +132,7 @@ public class Activity_duoBoard extends AppCompatActivity {
             }
         });
     }
-    private void setDuoBoard() {
+    private void setDuoBoard() { //게시판 게시물 세팅
 
         ProgressDialog progressDialog = new ProgressDialog(Activity_duoBoard.this);
         progressDialog.setMessage("소환사 정보를 받아오고 있습니다.");
@@ -140,7 +140,7 @@ public class Activity_duoBoard extends AppCompatActivity {
         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Horizontal);
         progressDialog.show();
 
-        mDatabase.child(selectedPosition)
+        mDatabase.child(selectedPosition) // 페이징 처리 & 불러오기
                 .orderByChild("id")
                 .limitToLast(10)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -151,6 +151,7 @@ public class Activity_duoBoard extends AppCompatActivity {
                             if(pagingPostId.isEmpty()){
                                 pagingPostId = userSnapshot.child("id").getValue(String.class);
                             }
+
                             saveDuoBoardPost = userSnapshot.getValue(SaveDuoBoardPost.class);
                             _id = saveDuoBoardPost.getId();
                             summonerTier = saveDuoBoardPost.getSummonerTier();
@@ -261,7 +262,7 @@ public class Activity_duoBoard extends AppCompatActivity {
         });
     }
     private void setRecyclerView(){
-        final RecyclerView duoBoardRecyclerView = (RecyclerView) findViewById(R.id.duoBoardRecyclerView);
+        final RecyclerView duoBoardRecyclerView = (RecyclerView) findViewById(R.id.duoBoardRecyclerView); // 리사이 클러뷰 세팅
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
         duoBoardRecyclerView.setLayoutManager(mLinearLayoutManager);
 
@@ -288,21 +289,22 @@ public class Activity_duoBoard extends AppCompatActivity {
                     intent.putExtra("commentCount", item.getCommentCount());
                     intent.putExtra("selectedPosition", selectedPosition);
                     startActivity(intent);
-                }else{
+                }else{ //데이터 받아오기
                     Toast.makeText(Activity_duoBoard.this, "데이터 로드에 실패했습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        duoBoardRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        duoBoardRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() { // 리사이클러뷰가 끝에 다닿으면
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                                                    .findLastCompletelyVisibleItemPosition();
                 int itemTotalCount = recyclerView.getAdapter().getItemCount() - 1;
                 if (lastVisibleItemPosition == itemTotalCount) {
-                    loadNextData();
+                    loadNextData(); // 다음 데이터 불러오기
                 }
             }
         });

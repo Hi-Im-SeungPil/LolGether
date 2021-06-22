@@ -129,9 +129,10 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"),  PICK_FROM_ALBUM);
 
     }
-    private void setPhotoRecyclerView(){
+    private void setPhotoRecyclerView(){ // 사진 띄어놓는 리사이클러뷰
 
         photoRecyclerView = (RecyclerView) findViewById(R.id.photoRecyclerView);
+        //LinearLayoutManager.HORIZONTAL <-- 리사이클러뷰 가로로
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         photoRecyclerView.setLayoutManager(mLinearLayoutManager);
 
@@ -250,13 +251,14 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         try {
+            // 비트팩토리 decodeStream매서드 사용
             BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, options);
 
             int width = options.outWidth;
             int height = options.outHeight;
             int samplesize = 2;
 
-            while (true) {
+            while (true) {//사이즈가 크다면 2로 나눈다
                 if (width / 2 < resize || height / 2 < resize)
                     break;
                 width /= 2;
@@ -272,7 +274,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return resizeBitmap;
+        return resizeBitmap; // 크기가 조정된 비트맵을 return한다.
     }
 
     private Bitmap rotateBitmap(Bitmap bitmap, int orientation) {

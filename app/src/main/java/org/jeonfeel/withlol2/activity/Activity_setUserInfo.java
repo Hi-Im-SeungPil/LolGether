@@ -118,15 +118,15 @@ public class Activity_setUserInfo extends AppCompatActivity {
     protected void mGetUserInfo(){
 
         String url = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/"+
-                resultId+ "?api_key=RGAPI-11e273ee-915a-4ab6-80e6-7a8ce0ed3905";
-        getSummonerInfo = new GetSummonerInfo();
+                resultId+ "?api_key=RGAPI-11e273ee-915a-4ab6-80e6-7a8ce0ed3905"; //API 받아올 URI
+        getSummonerInfo = new GetSummonerInfo(); // java DTO
 
-        try{
+        try{ // JSONArray 사용하기
             json_userInfo = new JSONArray();
-            json_userInfo = getSummonerInfo.execute(url).get();
+            json_userInfo = getSummonerInfo.execute(url).get(); // API 받아와서
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject = json_userInfo.getJSONObject(0);
+            jsonObject = json_userInfo.getJSONObject(0); // JSONObj에 넣기
             String queueType = jsonObject.getString("queueType");
 
             if (queueType.equals("RANKED_FLEX_SR")) {
@@ -147,6 +147,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    // 유저 정보 insert 매서드
     private void writeNewUser(final String UID, final String email, final String mSummonerName,
                               final String mTier, final String mRank, final int mWins, final int mLosses) {
 
@@ -157,11 +158,11 @@ public class Activity_setUserInfo extends AppCompatActivity {
                     Log.w("userInfo", "Fetching FCM registration token failed", task.getException());
                     return;
                 }
-                String token = task.getResult();
+                String token = task.getResult(); // push알림을 위한 token
 
                 User user = new User(email,mSummonerName,mTier,mRank,token,mWins,mLosses,1);
 
-                mDatabase.child("users").child(UID).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mDatabase.child("users").child(UID).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() { // firebase insert
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(Activity_setUserInfo.this, "소환사 정보 설정이 완료되었습니다!", Toast.LENGTH_SHORT).show();
