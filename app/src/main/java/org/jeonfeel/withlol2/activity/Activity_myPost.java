@@ -109,6 +109,12 @@ public class Activity_myPost extends AppCompatActivity {
                 setTog_myPostFreeBoard(isChecked);
             }
         });
+        btn_myPostBackspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
     public void mFindViewById(){
         btn_myPostBackspace = findViewById(R.id.btn_myPostBackspace);
@@ -342,7 +348,7 @@ public class Activity_myPost extends AppCompatActivity {
                 int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
                 int itemTotalCount = recyclerView.getAdapter().getItemCount() - 1;
                 if (lastVisibleItemPosition == itemTotalCount && tog_myPostFreeBoard.isChecked()) {
-//                    loadFreeNextData();
+                    loadFreeNextData();
                 }
             }
         });
@@ -472,47 +478,80 @@ public class Activity_myPost extends AppCompatActivity {
     private void loadFreeNextData(){
 
         freePostRef.orderByChild("postId")
-                .endAt(pagingDuoPostId)
+                .endAt(pagingFreePostId)
                 .limitToLast(11)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if(snapshot.hasChildren()) {
-                            if(pagingDuoPostId.equals(duolastKey)){
+                            if(pagingFreePostId.equals(freelastKey)){
                                 return;
                             }
                             for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                                 saveMyPost = dataSnapshot.getValue(SaveMyPost.class);
-                                _id = saveMyPost.getPostId();
+                                String _id = saveMyPost.getPostId();
 
-                                if(duoCheck == 1){
-                                    pagingDuoPostId = _id;
+                                if(freeCheck == 1){
+                                    pagingFreePostId = _id;
                                 }
 
-                                postId = saveMyPost.getPostId();
-                                postBoardChild = saveMyPost.getPostBoardChild();
-                                postSelectedPosition = saveMyPost.getPostSelectedPosition();
+                                String postId = saveMyPost.getPostId();
 
-                                ArrayPostId.add(0,postId);
-                                ArrayPostBoardChild.add(0,postBoardChild);
-                                ArrayPostSelectedPosition.add(0,postSelectedPosition);
-                                duoCheck++;
+                                ArrayFreePostId.add(0,postId);
 
-                                if(duoCheck == 12){
-                                    duoCheck = 1;
+                                freeCheck++;
+
+                                if(freeCheck == 12){
+                                    freeCheck = 1;
                                 }
                             }
                         }
-                        loadDuoNextPost();
-                        ArrayPostId.clear();
-                        ArrayPostBoardChild.clear();
-                        ArrayPostSelectedPosition.clear();
+                        loadFreeNextPost();
+                        ArrayFreePostId.clear();
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
                 });
+
+    }
+
+    private void loadFreeNextPost(){
+
+        for(int i = 1; i < ArrayFreePostId.size(); i++){
+
+            mDatabase2.orderByKey()
+                    .equalTo(ArrayFreePostId.get(i)).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue(User.class) != null) {
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            saveFreeBoardPost = userSnapshot.getValue(SaveFreeBoardPost.class);
+
+                            String _id = saveFreeBoardPost.getId();
+                            String summonerTier = saveFreeBoardPost.getSummonerTier();
+                            String writtenTitle = saveFreeBoardPost.getTitle();
+                            String writtenContent = saveFreeBoardPost.getContent();
+                            String summonerName = saveFreeBoardPost.getSummonerName();
+                            long postDate = saveFreeBoardPost.getPostDate();
+                            int commentCount = saveFreeBoardPost.getCommentCount();
+                            String writtenUid = saveFreeBoardPost.getUid();
+                            int imgExistence = saveFreeBoardPost.getImgExist();
+
+                            Item_freeBoard Item = new Item_freeBoard(_id,writtenUid,summonerTier,writtenTitle,writtenContent,summonerName,imgExistence
+                                    ,commentCount,postDate);
+
+                            freeBoardItem.add(Item);
+                            freeAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
 
     }
 
