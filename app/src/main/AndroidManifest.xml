@@ -121,6 +121,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.Activity_ModifyFreeBoardPost">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".etc.MyFirebaseMessagingService"
             android:exported="false">

@@ -23,12 +23,13 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
 
     ArrayList<Uri> albumImgList;
     Context mContext;
+    String kind;
 
         //생성자 정의
-    public Adapter_freeBoardPhoto(ArrayList<Uri> albumImgList, Context mContext ){
+    public Adapter_freeBoardPhoto(ArrayList<Uri> albumImgList, Context mContext,String kind ){
         this.albumImgList = albumImgList;
         this.mContext = mContext;
-
+        this.kind = kind;
     }
 
 //    public Adapter_freeBoardPhoto(ArrayList<Bitmap> albumImgList, Context mContext,
@@ -61,6 +62,10 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
 //            holder.iv_photo.setImageBitmap(albumImgList.get(position));
         Glide.with(mContext).load(albumImgList.get(position))
                 .into(holder.iv_photo);
+
+        if(kind.equals("modify")){
+            holder.btn_photoDel.setVisibility(View.GONE);
+        }
     }
 
     @Override

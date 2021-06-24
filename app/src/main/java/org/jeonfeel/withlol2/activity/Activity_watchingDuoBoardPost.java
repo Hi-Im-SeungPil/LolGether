@@ -59,7 +59,6 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
     private EditText et_writeComment;
     private Button btn_writtenRefresh,btn_postPopUp,btn_writerRecord,btn_freeBoardPostPopUp;
 
-
     private String currentSummonerName,currentSummonerTier,currentUserUid;
     private int currentUserNotificationStatus;
 
@@ -97,7 +96,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
         mFindViewById();
 
         getCurrentUserInfo();
-        getWrittenInfo();
+        getPostInfo();
         mDatabase = FirebaseDatabase.getInstance().getReference("duoBoard/"+boardChild);
         setWritten();
         getLastKey();
@@ -119,7 +118,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
         btn_writtenRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setBtn_writtenRefresh();
+                setBtn_postRefresh();
             }
         });
         btn_postPopUp.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +135,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
         });
     }
 
-    public void mFindViewById(){
+    private void mFindViewById(){
 
         img_wdSummonerTier = findViewById(R.id.img_wdSummonerTier);
         img_writeComment = findViewById(R.id.img_writeComment);
@@ -155,7 +154,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
 
     }
 
-    private void getWrittenInfo(){
+    private void getPostInfo(){
 
         Intent intent = getIntent();
         writtenId = intent.getStringExtra("writtenId");
@@ -170,10 +169,11 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
         selectedPosition = intent.getStringExtra("selectedPosition");
 
         getBoardChild();
-
         tv_boardTitle.setText(boardTitle);
+
     }
-    public void setBtn_writerRecord(View v){
+
+    private void setBtn_writerRecord(View v){
         PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
         getMenuInflater().inflate(R.menu.writer_record, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -486,7 +486,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
             popupMenu.show();
         }
     }
-    private void setBtn_writtenRefresh(){
+    private void setBtn_postRefresh(){
         Intent intent = new Intent(this, Activity_watchingDuoBoardPost.class);
 
         intent.putExtra("writtenId",writtenId);
@@ -502,7 +502,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
         finish();
         startActivity(intent);
     }
-        public void loadNextData(){
+    private void loadNextData(){
             mmDatabase.child("duoBoardComment")
                     .child(writtenId)
                     .orderByChild("_id")
@@ -543,7 +543,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
                     });
 
     }
-    public void getLastKey(){
+    private void getLastKey(){
         mmDatabase.child("duoBoardComment")
                 .child(writtenId)
                 .orderByChild("_id")

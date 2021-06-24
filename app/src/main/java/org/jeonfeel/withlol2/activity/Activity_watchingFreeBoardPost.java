@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -48,7 +49,6 @@ import org.jeonfeel.withlol2.R;
 import org.jeonfeel.withlol2.adapter.Adapter_freeBoardComment;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
 import org.jeonfeel.withlol2.etc.Item_comment;
-import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 
@@ -92,7 +92,6 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
             Toast.makeText(Activity_watchingFreeBoardPost.this, "인터넷 연결을 확인해 주세요!!", Toast.LENGTH_SHORT).show();
             finish();
         }
-
         getCurrentUserInfo();
 
         mFindViewById();
@@ -150,8 +149,6 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
-        photoList = new ArrayList<>();
-        photoListName = new ArrayList<>();
 
         storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
@@ -170,14 +167,11 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
                     Linear_insertImageView.addView(iv,params);
 
-                    photoListName.add(item.getName());
-
                     item.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
                             if(task.isSuccessful()) {
                                 Glide.with(Activity_watchingFreeBoardPost.this).load(task.getResult()).into(iv);
-                                photoList.add(task.getResult());
                             }else{
                                 Toast.makeText(Activity_watchingFreeBoardPost.this, "이미지를 불러오는 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                             }
@@ -187,6 +181,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
             }
         });
     }
+
     private void setPost(){
         tv_freeBoardSummonerName.setText(summonerName);
         tv_freeBoardTitle.setText(postTitle);
@@ -446,15 +441,15 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             if (item.getItemId() == R.id.btn_postRetouch) {
-//                        Intent intent = new Intent(getApplication(), Activity_freeBoardPostRetouch.class);
-//
-//                        intent.putExtra("postId", postId);
-//                        intent.putExtra("postTitle", postTitle);
-//                        intent.putExtra("postContent", postContent);
-//                        intent.putExtra("summonerName",summonerName);
-//                        intent.putExtra("imgExistence",imgExistence);
-//
-//                        startActivity(intent);
+                        Intent intent = new Intent(getApplication(), Activity_ModifyFreeBoardPost.class);
+
+                        intent.putExtra("postId", postId);
+                        intent.putExtra("postTitle", postTitle);
+                        intent.putExtra("postContent", postContent);
+                        intent.putExtra("summonerName",summonerName);
+                        intent.putExtra("imgExistence",imgExistence);
+
+                        startActivity(intent);
 
                             } else if (item.getItemId() == R.id.btn_postDel) {
                                 AlertDialog.Builder msgBuilder = new AlertDialog.Builder(Activity_watchingFreeBoardPost.this)

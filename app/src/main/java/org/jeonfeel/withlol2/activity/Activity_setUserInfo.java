@@ -1,7 +1,9 @@
 package org.jeonfeel.withlol2.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,6 +41,9 @@ import org.json.JSONObject;
 import java.util.concurrent.ExecutionException;
 
 public class Activity_setUserInfo extends AppCompatActivity {
+
+    public static final int REQUEST_CODE = 111;
+
     private TextView tv_setSummonerName,tv_setSummonerTier,tv_setSummonerWinningRate;
     private ImageView img_setUserTier;
     private Button btn_setSearchUserId,btn_start;
@@ -264,5 +270,6 @@ public class Activity_setUserInfo extends AppCompatActivity {
             tv_setSummonerTier.setText(tier + " " + rank);
             tv_setSummonerWinningRate.setText("승 : " + wins +"\n" + "패 : " + losses);
         }
+
 }
 

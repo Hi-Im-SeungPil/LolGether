@@ -18,15 +18,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,19 +37,15 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import org.jeonfeel.withlol2.DTO.SaveFreeBoardPost;
-import org.jeonfeel.withlol2.DTO.SaveMyPost;
 import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.adapter.Adapter_freeBoardPhoto;
 import org.jeonfeel.withlol2.R;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
@@ -123,9 +116,9 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
         btn_freeBoardWriteBackspace = findViewById(R.id.btn_freeBoardWriteBackspace);
         btn_addPhoto = findViewById(R.id.btn_addPhoto);
         btn_postWrite = findViewById(R.id.btn_postWrite);
-        et_freeBoardTitle = findViewById(R.id.et_freeBoardTitle);
-        et_freeBoardContent = findViewById(R.id.et_freeBoardContent);
-        cb_anonymity = findViewById(R.id.cb_anonymity);
+        et_freeBoardTitle = findViewById(R.id.et_modifyFreeBoardTitle);
+        et_freeBoardContent = findViewById(R.id.et_modifyFreeBoardContent);
+        cb_anonymity = findViewById(R.id.cb_modifyAnonymity);
     }
 
     private void setBtn_addPhoto(){
@@ -141,7 +134,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     }
     private void setPhotoRecyclerView(){ // 사진 띄어놓는 리사이클러뷰
 
-        photoRecyclerView = (RecyclerView) findViewById(R.id.photoRecyclerView);
+        photoRecyclerView = (RecyclerView) findViewById(R.id.modifyPhotoRecyclerView);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         photoRecyclerView.setLayoutManager(mLinearLayoutManager);
 
@@ -172,7 +165,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                    imgExistence = 1;
                }
            }
-            adapter = new Adapter_freeBoardPhoto(uploadPhotoList2,this);
+            adapter = new Adapter_freeBoardPhoto(uploadPhotoList2,this,"writing");
             Log.d("qqqq",adapter.getItemCount()+"");
             photoRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
