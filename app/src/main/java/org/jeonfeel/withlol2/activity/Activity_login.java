@@ -1,6 +1,8 @@
 package org.jeonfeel.withlol2.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -49,6 +52,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class Activity_login extends AppCompatActivity {
+    public static final int REQUEST_CODE = 111;
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -71,6 +75,7 @@ public class Activity_login extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+        OnCheckPermission();
 
         btn_googleLogin = findViewById(R.id.btn_googleLogin);
         btn_facebookLogin = findViewById(R.id.btn_facebookLogin);
@@ -232,6 +237,46 @@ public class Activity_login extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
+        }
+    }
+
+    private void OnCheckPermission(){
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED || ActivityCompat
+                .checkSelfPermission(this,Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+
+            String[] permissions = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.INTERNET};
+
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_NETWORK_STATE)){
+
+                Toast.makeText(Activity_login.this, "앱 실행을 위해 권한 설정이 필요합니다.", Toast.LENGTH_LONG).show();
+
+                ActivityCompat.requestPermissions(this,permissions,REQUEST_CODE);
+            }else{
+                ActivityCompat.requestPermissions(this,permissions,REQUEST_CODE);
+            }
+        }
+    }
+
+    @Override
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+
+            case REQUEST_CODE :
+
+                if (grantResults.length > 0
+
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(this, "앱 실행을 위한 권한이 설정 되었습니다", Toast.LENGTH_LONG).show();
+                } else {
+
+                    Toast.makeText(this, "앱 실행을 위한 권한이 취소 되었습니다", Toast.LENGTH_LONG).show();
+                }
+
+                break;
         }
     }
 

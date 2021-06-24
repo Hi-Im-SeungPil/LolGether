@@ -1,8 +1,10 @@
 package org.jeonfeel.withlol2.activity;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,11 +18,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,11 +56,13 @@ import java.util.Date;
 
 public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
+    public static final int REQUEST_CODE = 1111;
     private Button btn_freeBoardWriteBackspace,btn_addPhoto,btn_postWrite;
     private EditText et_freeBoardTitle,et_freeBoardContent;
     private static final int PICK_FROM_ALBUM = 111;
     private RecyclerView photoRecyclerView;
     private static ArrayList<Bitmap> uploadPhotoList;
+    private static ArrayList<Uri> uploadPhotoList2;
     private Adapter_freeBoardPhoto adapter;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -109,7 +118,6 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                 finish();
             }
         });
-
     }
     private void mFindViewById(){
         btn_freeBoardWriteBackspace = findViewById(R.id.btn_freeBoardWriteBackspace);
@@ -122,6 +130,8 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
     private void setBtn_addPhoto(){
 
+        OnCheckPermission();
+
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
         //사진을 여러개 선택할수 있도록 한다
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -132,12 +142,10 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     private void setPhotoRecyclerView(){ // 사진 띄어놓는 리사이클러뷰
 
         photoRecyclerView = (RecyclerView) findViewById(R.id.photoRecyclerView);
-        //LinearLayoutManager.HORIZONTAL <-- 리사이클러뷰 가로로
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         photoRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         photoRecyclerView.setVisibility(View.GONE);
-
     }
 
     @Override
@@ -149,35 +157,23 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                ClipData clipData = data.getClipData();
                imgExistence = 0;
                photoRecyclerView.setVisibility(View.GONE);
+
                if(clipData.getItemCount() > 10){
                    Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
                    return;
                }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
+
                    uploadPhotoList = new ArrayList<>();
-
+                   uploadPhotoList2 = new ArrayList<>();
                    for(int i = 0; i < clipData.getItemCount(); i++){
-                       try {
-                           String path = getRealPathFromURI(clipData.getItemAt(i).getUri());
-                           Log.d("path",path);
-                           ExifInterface exif = new ExifInterface(path);
-                           int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                                   ExifInterface.ORIENTATION_UNDEFINED);
-
-                           Bitmap bitImg = resize(Activity_writingFreeBoardPost.this, clipData.getItemAt(i).getUri(), 700);
-                           Log.d("path",String.valueOf(clipData.getItemAt(i).getUri()));
-
-                           Bitmap bmRotated = rotateBitmap(bitImg, orientation);
-
-                           uploadPhotoList.add(bmRotated);
-                       } catch (IOException e) {
-                           e.printStackTrace();
-                       }
+                           uploadPhotoList2.add(clipData.getItemAt(i).getUri());
                    }
                    photoRecyclerView.setVisibility(View.VISIBLE);
                    imgExistence = 1;
                }
            }
-            adapter = new Adapter_freeBoardPhoto(uploadPhotoList,this,photoRecyclerView,"writing");
+            adapter = new Adapter_freeBoardPhoto(uploadPhotoList2,this);
+            Log.d("qqqq",adapter.getItemCount()+"");
             photoRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
@@ -196,9 +192,24 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
 
+                for(int i = 0; i < uploadPhotoList2.size(); i++){
+                    Bitmap bit = resize(this,uploadPhotoList2.get(i),500);
+
+                    String path = getRealPathFromURI(uploadPhotoList2.get(i));
+
+                    ExifInterface exif = new ExifInterface(path);
+
+                    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_UNDEFINED);
+
+                    bit = rotateBitmap(bit,orientation);
+
+                    uploadPhotoList.add(bit);
+                }
+
                 for (int i = 0; i < uploadPhotoList.size(); i++) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 70, baos);
                     byte[] data = baos.toByteArray();
 
                     storageRef.child(postId + "/" + i)
@@ -331,6 +342,45 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
         cursor.close();
         return path;
+    }
+
+    private void OnCheckPermission(){
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat
+                .checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+
+            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_EXTERNAL_STORAGE)){
+
+                Toast.makeText(this, "앱 실행을 위해 권한 설정이 필요합니다.", Toast.LENGTH_LONG).show();
+
+                ActivityCompat.requestPermissions(this,permissions,REQUEST_CODE);
+            }else{
+                ActivityCompat.requestPermissions(this,permissions,REQUEST_CODE);
+            }
+        }
+    }
+    @Override
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+
+            case REQUEST_CODE :
+
+                if (grantResults.length > 0
+
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(this, "앱 실행을 위한 권한이 설정 되었습니다", Toast.LENGTH_LONG).show();
+                } else {
+
+                    Toast.makeText(this, "앱 실행을 위한 권한이 취소 되었습니다", Toast.LENGTH_LONG).show();
+                }
+
+                break;
+        }
     }
 
 }

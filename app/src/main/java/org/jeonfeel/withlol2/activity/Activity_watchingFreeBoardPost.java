@@ -5,13 +5,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -32,10 +29,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +48,7 @@ import org.jeonfeel.withlol2.R;
 import org.jeonfeel.withlol2.adapter.Adapter_freeBoardComment;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
 import org.jeonfeel.withlol2.etc.Item_comment;
+import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 
@@ -70,10 +66,9 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
     private CheckBox cb_commentAnonymity;
 
     private DatabaseReference mDatabase;
-    private FirebaseAuth mAuth;
     private String currentSummonerName,currentSummonerTier,currentUserUid;
     private Adapter_freeBoardComment adapter;
-    private String pagingPostId,lastKey;
+    private String commentPagingPostId ="", commentLastKey="";
     private ArrayList<Item_comment> mItem,sampleItem;
     private NestedScrollView mNestedScrollView;
     private ArrayList<Uri> photoList;
@@ -103,7 +98,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         mFindViewById();
 
         getPostInfo();
-        getLastKey();
+        getCommentLastKey();
         setCommentRecyclerView();
 
         setPhoto();
@@ -311,17 +306,12 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
                     mDatabase.child("freeBoardComment").child(postId).child(commentId).setValue(saveComment);
 
-                    mDatabase.child("freeBoard")
-                            .child(postId)
-                            .child("commentCount").setValue(mItem.size());
-
                     mDatabase.child("users").child(writerUid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String token = snapshot.child("token").getValue(String.class);
                             SendNotification.sendNotification(token, postTitle, "새로운 댓글이 달렸습니다.");
                         }
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
                         }
@@ -331,6 +321,8 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                             currentSummonerName, commentContent, currentUserUid, commentDate);
                     mItem.add(Item);
                     adapter.notifyDataSetChanged();
+
+                    mDatabase.child("freeBoard").child(postId).child("commentCount").setValue(mItem.size());
 
                     InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     mInputMethodManager.hideSoftInputFromWindow(btn_freeBoardWriteComment.getWindowToken(), 0);
@@ -356,7 +348,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         String commentContent = saveComment.getCommentContent();
                         String Uid = saveComment.getUid();
                         long commentDate = saveComment.getCommentDate();
-                        pagingPostId = _id;
+                        commentPagingPostId = _id;
 
                         Item_comment Item = new Item_comment(_id,commentSummonerTier,commentSummonerName,
                                 commentContent,Uid,commentDate);
@@ -381,16 +373,17 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
     }
 
     public void loadNextData(){
+
         mDatabase.child("freeBoardComment")
                 .child(postId)
                 .orderByChild("_id")
-                .startAt(pagingPostId)
+                .startAt(commentPagingPostId)
                 .limitToFirst(7)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if(snapshot.hasChildren()) {
-                            if(pagingPostId.equals(lastKey)){
+                            if(!commentPagingPostId.isEmpty() && commentPagingPostId.equals(commentLastKey) ){
                                 return;
                             }
                             for(DataSnapshot dataSnapshot : snapshot.getChildren()){
@@ -401,7 +394,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                                 String commentContent = saveComment.getCommentContent();
                                 String Uid = saveComment.getUid();
                                 long commentDate = saveComment.getCommentDate();
-                                pagingPostId = _id;
+                                commentPagingPostId = _id;
 
                                 Item_comment Item = new Item_comment(_id,commentSummonerTier,commentSummonerName,
                                         commentContent,Uid,commentDate);
@@ -420,7 +413,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                     }
                 });
     }
-    public void getLastKey(){
+    public void getCommentLastKey(){
         mDatabase.child("freeBoardComment")
                 .child(postId)
                 .orderByChild("_id")
@@ -430,7 +423,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.hasChildren()) {
                             for (DataSnapshot s : snapshot.getChildren()) {
-                                lastKey = s.child("_id").getValue(String.class);
+                                commentLastKey = s.child("_id").getValue(String.class);
                             }
                         }
                     }
@@ -453,15 +446,15 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             if (item.getItemId() == R.id.btn_postRetouch) {
-                        Intent intent = new Intent(getApplication(), Activity_freeBoardPostRetouch.class);
-
-                        intent.putExtra("postId", postId);
-                        intent.putExtra("postTitle", postTitle);
-                        intent.putExtra("postContent", postContent);
-                        intent.putExtra("summonerName",summonerName);
-                        intent.putExtra("imgExistence",imgExistence);
-
-                        startActivity(intent);
+//                        Intent intent = new Intent(getApplication(), Activity_freeBoardPostRetouch.class);
+//
+//                        intent.putExtra("postId", postId);
+//                        intent.putExtra("postTitle", postTitle);
+//                        intent.putExtra("postContent", postContent);
+//                        intent.putExtra("summonerName",summonerName);
+//                        intent.putExtra("imgExistence",imgExistence);
+//
+//                        startActivity(intent);
 
                             } else if (item.getItemId() == R.id.btn_postDel) {
                                 AlertDialog.Builder msgBuilder = new AlertDialog.Builder(Activity_watchingFreeBoardPost.this)
@@ -506,9 +499,9 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                                 AlertDialog msgDlg = msgBuilder.create();
                                 msgDlg.show();
                             }else if(item.getItemId() == R.id.btn_imageRetouch){
-                                Intent intent = new Intent(Activity_watchingFreeBoardPost.this,Activity_freeBoardImageRetouch.class);
-                                intent.putExtra("postId",postId);
-                                startActivity(intent);
+//                                Intent intent = new Intent(Activity_watchingFreeBoardPost.this,Activity_freeBoardImageRetouch.class);
+//                                intent.putExtra("postId",postId);
+//                                startActivity(intent);
                             }
                             return false;
                         }

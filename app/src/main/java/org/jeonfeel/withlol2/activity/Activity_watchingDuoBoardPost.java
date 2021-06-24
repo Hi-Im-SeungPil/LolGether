@@ -318,7 +318,6 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
             mInputMethodManager.hideSoftInputFromWindow(img_writeComment.getWindowToken(), 0);
             et_writeComment.setText("");
         }
-
     }
 
     private void setComment(){
