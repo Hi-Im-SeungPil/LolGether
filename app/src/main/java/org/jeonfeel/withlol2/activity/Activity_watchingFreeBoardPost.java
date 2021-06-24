@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -64,6 +65,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
     private long postDate;
     private ImageView iv_freeBoardSummonerTier;
     private CheckBox cb_commentAnonymity;
+    RequestManager requestManager;
 
     private DatabaseReference mDatabase;
     private String currentSummonerName,currentSummonerTier,currentUserUid;
@@ -71,8 +73,6 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
     private String commentPagingPostId ="", commentLastKey="";
     private ArrayList<Item_comment> mItem,sampleItem;
     private NestedScrollView mNestedScrollView;
-    private ArrayList<Uri> photoList;
-    private ArrayList<String> photoListName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +81,8 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         sampleItem = new ArrayList<>();
+        requestManager = Glide.with(Activity_watchingFreeBoardPost.this);
+
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
@@ -170,10 +172,10 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                     item.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
-                            if(task.isSuccessful()) {
+                            if(task.isSuccessful() && isValidContextForGlide(Activity_watchingFreeBoardPost.this)) {
                                 Glide.with(Activity_watchingFreeBoardPost.this).load(task.getResult()).into(iv);
                             }else{
-                                Toast.makeText(Activity_watchingFreeBoardPost.this, "이미지를 불러오는 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(Activity_watchingFreeBoardPost.this, "이미지를 불러오는 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -568,4 +570,16 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         }
     }
 
+    public static boolean isValidContextForGlide(Context context){
+        if(context == null){
+            return false;
+        }
+        if(context instanceof Activity){
+            Activity activity = (Activity) context;
+            if(activity.isDestroyed() || activity.isFinishing()){
+                return false;
+            }
+        }
+        return true;
+    }
 }
