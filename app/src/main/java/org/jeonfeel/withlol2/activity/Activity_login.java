@@ -63,7 +63,6 @@ public class Activity_login extends AppCompatActivity {
 
     private Button btn_googleLogin,btn_kakaoLogin;
     private LoginButton btn_facebookLogin;
-    private String kakaoToken = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +76,7 @@ public class Activity_login extends AppCompatActivity {
 
         btn_googleLogin = findViewById(R.id.btn_googleLogin);
         btn_facebookLogin = findViewById(R.id.btn_facebookLogin);
-//      btn_kakaoLogin = findViewById(R.id.btn_kakaoLogin);
+         btn_kakaoLogin = findViewById(R.id.btn_kakaoLogin);
         googleSignIn();
         facebookSignIn();
 
@@ -87,6 +86,12 @@ public class Activity_login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signIn();
+            }
+        });
+        btn_kakaoLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                kakaoLogin();
             }
         });
 
@@ -192,7 +197,6 @@ public class Activity_login extends AppCompatActivity {
                         } else {
 
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-
                             loginSuccess(null);
                         }
                     }
@@ -201,6 +205,52 @@ public class Activity_login extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void kakaoLogin() {
+        if(UserApiClient.getInstance().isKakaoTalkLoginAvailable(Activity_login.this)){
+            UserApiClient.getInstance().loginWithKakaoTalk(Activity_login.this, (oAuthToken, error) -> {
+                if (error != null) {
+                    Log.e(TAG, "로그인 실패", error);
+                } else if (oAuthToken != null) {
+                    Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
+                    oAuthToken.getAccessToken();
+
+                }
+                return null;
+            });
+        }else{
+            UserApiClient.getInstance().loginWithKakaoAccount(Activity_login.this, (oAuthToken, error) -> {
+                if (error != null) {
+                    Log.e(TAG, "로그인 실패", error);
+                } else if (oAuthToken != null) {
+                    Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
+                    customLogin(oAuthToken.getAccessToken());
+                }
+                return null;
+            });
+        }
+    }
+
+    private void customLogin(String mCustomToken){
+        mAuth.signInWithCustomToken(mCustomToken)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCustomToken:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            loginSuccess(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCustomToken:failure", task.getException());
+                            Toast.makeText(Activity_login.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            loginSuccess(null);
+                        }
+                    }
+                });
     }
 
 

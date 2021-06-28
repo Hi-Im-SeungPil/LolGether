@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+
     compileSdkVersion 29
     buildToolsVersion "30.0.3"
 
@@ -26,7 +27,6 @@ android {
                 // but continue the build even when errors are found:
 
                 abortOnError false
-
 
             }
 

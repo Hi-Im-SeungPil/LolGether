@@ -19,6 +19,8 @@ import org.jeonfeel.withlol2.activity.Activity_writingFreeBoardPost;
 
 import java.util.ArrayList;
 
+import static org.jeonfeel.withlol2.activity.Activity_watchingFreeBoardPost.isValidContextForGlide;
+
 public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoardPhoto.mViewHolder> {
 
     ArrayList<Uri> albumImgList;
@@ -60,9 +62,10 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
     public void onBindViewHolder(@NonNull mViewHolder holder, int position) {
         //앨범에서 가져온 이미지 표시
 //            holder.iv_photo.setImageBitmap(albumImgList.get(position));
-        Glide.with(mContext).load(albumImgList.get(position))
-                .into(holder.iv_photo);
-
+        if(isValidContextForGlide(mContext)) {
+            Glide.with(mContext).load(albumImgList.get(position))
+                    .into(holder.iv_photo);
+        }
         if(kind.equals("modify")){
             holder.btn_photoDel.setVisibility(View.GONE);
         }

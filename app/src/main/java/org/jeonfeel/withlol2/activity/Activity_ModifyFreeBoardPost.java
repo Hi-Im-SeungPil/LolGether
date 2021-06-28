@@ -50,7 +50,6 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-
         getCurrentUserInfo();
         mFindViewById();
         setPhotoRecyclerView();
@@ -101,9 +100,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                             }
                         });
                     }
-
                     Log.d("qqqq",photoList.size()+"");
-
                 }
             });
         }

@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:name=".GlobalApplication">
 
 
         <activity android:name=".MainActivity">
@@ -179,6 +180,7 @@
             </intent-filter>
         </activity>
 <!--                 android:scheme="kakao{NATIVE_APP_KEY}" />-->
+
 
     </application>
 
