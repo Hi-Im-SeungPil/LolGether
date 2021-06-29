@@ -252,8 +252,6 @@ public class Activity_login extends AppCompatActivity {
                     }
                 });
     }
-
-
     public void signOut() {
         mAuth.signOut();
     }

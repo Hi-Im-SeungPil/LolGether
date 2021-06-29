@@ -1,8 +1,11 @@
 package org.jeonfeel.withlol2.activity;
 
+import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,17 +33,23 @@ import com.google.firebase.storage.StorageReference;
 import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.R;
 import org.jeonfeel.withlol2.adapter.Adapter_freeBoardPhoto;
+import org.jeonfeel.withlol2.etc.CheckNetwork;
 
 import java.util.ArrayList;
 
 public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
 
     private EditText et_modifyFreeBoardTitle,et_modifyFreeBoardContent;
+    private static final int PICK_FROM_ALBUM = 111;
     private CheckBox cb_modifyAnonymity;
-    private Button btn_freePostRetouchWrite;
+    private Button btn_freePostModifyWrite,btn_postModifyAddPhoto;
     private RecyclerView modifyPhotoRecyclerView;
 
     private String currentSummonerName,currentSummonerTier,currentUserUid;
+
+    private static ArrayList<Bitmap> uploadPhotoList;
+    private static ArrayList<Uri> uploadPhotoList2;
+    private int imgExistence = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,19 +59,23 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
+        checkNetwork();
         getCurrentUserInfo();
         mFindViewById();
         setPhotoRecyclerView();
         setPost();
+        setBtn_postModifyAddPhoto();
     }
 
     private void mFindViewById(){
         et_modifyFreeBoardTitle = findViewById(R.id.et_modifyFreeBoardTitle);
         et_modifyFreeBoardContent = findViewById(R.id.et_modifyFreeBoardContent);
         cb_modifyAnonymity = findViewById(R.id.cb_modifyAnonymity);
-        btn_freePostRetouchWrite = findViewById(R.id.btn_freePostRetouchWrite);
+        btn_freePostModifyWrite = findViewById(R.id.btn_freePostModifyWrite);
         modifyPhotoRecyclerView =  findViewById(R.id.modifyPhotoRecyclerView);
+        btn_postModifyAddPhoto = findViewById(R.id.btn_postModifyAddPhoto);
     }
+
     private void setPost(){
         Intent intent = getIntent();
         String postId = intent.getStringExtra("postId");
@@ -119,5 +132,62 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
         modifyPhotoRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         modifyPhotoRecyclerView.setVisibility(View.GONE);
+    }
+//네트워크 상태 check
+    private void checkNetwork(){
+        CheckNetwork checkNetwork = new CheckNetwork();
+
+        int netWorkStatus = checkNetwork.CheckNetwork(getApplication());
+
+        if(netWorkStatus == 0){
+            Toast.makeText(getApplication(), "인터넷 연결을 확인해 주세요!!", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    // 사진 추가 버튼 설정.
+    private void setBtn_postModifyAddPhoto(){
+        btn_postModifyAddPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+                //사진을 여러개 선택할수 있도록 한다
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"),  PICK_FROM_ALBUM);
+            }
+        });
+    }
+// 사진 추가 result
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_FROM_ALBUM && resultCode == RESULT_OK && data != null) {
+
+            if (data.getClipData() != null) {
+                ClipData clipData = data.getClipData();
+                imgExistence = 0;
+                modifyPhotoRecyclerView.setVisibility(View.GONE);
+
+                if(clipData.getItemCount() > 10){
+                    Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
+                    imgExistence = 0;
+                    return;
+                }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
+
+                    uploadPhotoList = new ArrayList<>();
+                    uploadPhotoList2 = new ArrayList<>();
+                    for(int i = 0; i < clipData.getItemCount(); i++){
+                        uploadPhotoList2.add(clipData.getItemAt(i).getUri());
+                    }
+                    modifyPhotoRecyclerView.setVisibility(View.VISIBLE);
+                    imgExistence = 1;
+                }
+            }
+            Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(uploadPhotoList2,this,"modify");
+            modifyPhotoRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
     }
 }

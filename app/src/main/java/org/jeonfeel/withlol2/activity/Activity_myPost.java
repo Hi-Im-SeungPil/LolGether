@@ -217,7 +217,7 @@ public class Activity_myPost extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                         }
                     }
-                    myFreePostRecyclerView.setVisibility(View.INVISIBLE);
+
                 }
 
                 @Override
@@ -255,6 +255,7 @@ public class Activity_myPost extends AppCompatActivity {
                             freeAdapter.notifyDataSetChanged();
                         }
                     }
+                    myFreePostRecyclerView.setVisibility(View.INVISIBLE);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {

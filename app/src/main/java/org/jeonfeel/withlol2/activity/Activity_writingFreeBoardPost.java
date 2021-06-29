@@ -55,7 +55,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     private static final int PICK_FROM_ALBUM = 111;
     private RecyclerView photoRecyclerView;
     private static ArrayList<Bitmap> uploadPhotoList;
-    private static ArrayList<Uri> uploadPhotoList2;
+    public static ArrayList<Uri> uploadPhotoList2;
     private Adapter_freeBoardPhoto adapter;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -153,6 +153,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
                if(clipData.getItemCount() > 10){
                    Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
+                   imgExistence = 0;
                    return;
                }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
 
@@ -240,7 +241,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     }
 
     public static void delPhoto(int position){
-        uploadPhotoList.remove(position);
+        uploadPhotoList2.remove(position);
     }
 
     public void getCurrentUserInfo(){

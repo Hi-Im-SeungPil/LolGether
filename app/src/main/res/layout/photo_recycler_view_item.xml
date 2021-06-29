@@ -6,10 +6,13 @@
 
     <Button
         android:id="@+id/btn_photoDel"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         app:layout_constraintRight_toRightOf="@+id/iv_photo"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/img_photo_del"
+        android:layout_marginTop="6dp"
+        android:layout_marginRight="4dp"/>
 
     <ImageView
         android:id="@+id/iv_photo"
@@ -19,6 +22,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:scaleType="fitCenter"
         android:background="@drawable/image_view_border"
-        android:layout_margin="4dp"/>
+        android:layout_margin="4dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
