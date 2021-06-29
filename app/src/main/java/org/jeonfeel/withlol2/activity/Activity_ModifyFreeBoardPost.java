@@ -1,8 +1,13 @@
 package org.jeonfeel.withlol2.activity;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,15 +31,22 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import org.jeonfeel.withlol2.DTO.SaveFreeBoardPost;
 import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.R;
 import org.jeonfeel.withlol2.adapter.Adapter_freeBoardPhoto;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
@@ -46,10 +58,13 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
     private RecyclerView modifyPhotoRecyclerView;
 
     private String currentSummonerName,currentSummonerTier,currentUserUid;
+    private String postId;
+    private int postDate;
 
     private static ArrayList<Bitmap> uploadPhotoList;
-    private static ArrayList<Uri> uploadPhotoList2;
+    private static ArrayList<Uri> photoList;
     private int imgExistence = 0;
+    private boolean modifyPhoto = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +80,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
         setPhotoRecyclerView();
         setPost();
         setBtn_postModifyAddPhoto();
+        setBtn_freePostModifyWrite();
     }
 
     private void mFindViewById(){
@@ -78,22 +94,27 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
 
     private void setPost(){
         Intent intent = getIntent();
-        String postId = intent.getStringExtra("postId");
+        postId = intent.getStringExtra("postId");
 //        String writerUid = intent.getStringExtra("writerUid");
         String postTitle = intent.getStringExtra("postTitle");
         String postContent = intent.getStringExtra("postContent");
 //        String summonerTier = intent.getStringExtra("summonerTier");
-//        String summonerName = intent.getStringExtra("summonerName");
-        int imgExistence = intent.getIntExtra("imgExistence",0);
+        String summonerName = intent.getStringExtra("summonerName");
+        imgExistence = intent.getIntExtra("imgExistence",0);
+        postDate = intent.getIntExtra("postDate",0);
 
         et_modifyFreeBoardTitle.setText(postTitle);
         et_modifyFreeBoardContent.setText(postContent);
+
+        if(summonerName.equals("롤게더 익명")){
+            cb_modifyAnonymity.setChecked(true);
+        }
 
         if(imgExistence == 1){
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
             modifyPhotoRecyclerView.setVisibility(View.VISIBLE);
-            ArrayList<Uri> photoList = new ArrayList<>();
+            photoList = new ArrayList<>();
 
             storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
                 @Override
@@ -113,7 +134,6 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                             }
                         });
                     }
-                    Log.d("qqqq",photoList.size()+"");
                 }
             });
         }
@@ -168,26 +188,233 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
             if (data.getClipData() != null) {
                 ClipData clipData = data.getClipData();
                 imgExistence = 0;
+
+                if(photoList != null) {
+                    photoList.clear();
+                }
+
                 modifyPhotoRecyclerView.setVisibility(View.GONE);
 
                 if(clipData.getItemCount() > 10){
                     Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
+
+                    if(photoList != null) {
+                        photoList.clear();
+                    }
+
                     imgExistence = 0;
                     return;
                 }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
 
                     uploadPhotoList = new ArrayList<>();
-                    uploadPhotoList2 = new ArrayList<>();
+
+                    if(photoList != null) {
+                        photoList.clear();
+                    }
                     for(int i = 0; i < clipData.getItemCount(); i++){
-                        uploadPhotoList2.add(clipData.getItemAt(i).getUri());
+                        photoList.add(clipData.getItemAt(i).getUri());
                     }
                     modifyPhotoRecyclerView.setVisibility(View.VISIBLE);
                     imgExistence = 1;
+                    modifyPhoto = true;
                 }
             }
-            Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(uploadPhotoList2,this,"modify");
+            Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(photoList,this,"modify");
             modifyPhotoRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
     }
+
+    private void setBtn_freePostModifyWrite(){
+        btn_freePostModifyWrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                String title = et_modifyFreeBoardTitle.getText().toString();
+                String content = et_modifyFreeBoardContent.getText().toString();
+
+                if(title.length() == 0){
+                    Toast.makeText(Activity_ModifyFreeBoardPost.this, "제목을 입력해 주세요!", Toast.LENGTH_SHORT).show();
+                }else if(content.length() == 0){
+                    Toast.makeText(Activity_ModifyFreeBoardPost.this, "내용을 입력해 주세요!", Toast.LENGTH_SHORT).show();
+                }else if(imgExistence == 1 && modifyPhoto == true && photoList != null){
+
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
+
+                        storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                            @Override
+                            public void onSuccess(ListResult listResult) {
+                                for(StorageReference item : listResult.getItems()){
+                                    item.delete();
+                                }
+                            }
+                        });
+
+                        for(int i = 0; i < photoList.size(); i++){
+                            Bitmap bit = resize(Activity_ModifyFreeBoardPost.this,photoList.get(i),500);
+
+                            String path = getRealPathFromURI(photoList.get(i));
+
+                            ExifInterface exif = null;
+                            try {
+                                exif = new ExifInterface(path);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                                    ExifInterface.ORIENTATION_UNDEFINED);
+
+                            bit = rotateBitmap(bit,orientation);
+
+                            uploadPhotoList.add(bit);
+                        }
+
+                        for (int i = 0; i < uploadPhotoList.size(); i++) {
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                            byte[] data = baos.toByteArray();
+
+                            storageRef.child(postId + "/" + i)
+                                    .putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                }
+                            });
+                        }
+                    }else if(photoList.size() == 0){
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
+                        storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                        @Override
+                        public void onSuccess(ListResult listResult) {
+                            for(StorageReference item : listResult.getItems()){
+                                item.delete();
+                            }
+                            imgExistence = 0;
+                        }
+                    });
+                }
+
+                    if (cb_modifyAnonymity.isChecked()) {
+                        currentSummonerName = "롤게더 익명";
+                        currentSummonerTier = "anonymity";
+
+                    }else if(!cb_modifyAnonymity.isChecked()){
+                        MainActivity mainActivity = new MainActivity();
+                        currentSummonerName = mainActivity.getCurrentSummonerName();
+                        currentSummonerTier = mainActivity.getCurrentSummonerTier();
+                    }
+
+                    SaveFreeBoardPost saveFreeBoardPost = new SaveFreeBoardPost(postId, currentUserUid, currentSummonerName, currentSummonerTier, title, content,
+                            0, postDate, imgExistence);
+
+                    mDatabase.child("freeBoard").child(postId).setValue(saveFreeBoardPost);
+
+                    Activity_freeBoard ac = (Activity_freeBoard) Activity_freeBoard.activity;
+                    ac.finish();
+
+                    Intent intent = new Intent(Activity_ModifyFreeBoardPost.this, Activity_freeBoard.class);
+
+                    finish();
+
+                    startActivity(intent);
+
+            }
+        });
+    }
+
+    private Bitmap resize(Context context, Uri uri, int resize){
+        Bitmap resizeBitmap=null;
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        try {
+            // 비트팩토리 decodeStream매서드 사용
+            BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, options);
+
+            int width = options.outWidth;
+            int height = options.outHeight;
+            int samplesize = 2;
+
+            while (true) {//사이즈가 크다면 2로 나눈다
+                if (width / 2 < resize || height / 2 < resize)
+                    break;
+                width /= 2;
+                height /= 2;
+                samplesize *= 2;
+            }
+
+            options.inSampleSize = samplesize;
+            Bitmap bitmap = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, options);
+
+            resizeBitmap=bitmap;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return resizeBitmap; // 크기가 조정된 비트맵을 return한다.
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_NORMAL:
+                return bitmap;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setRotate(180);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(-90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(-90);
+                break;
+            default:
+                return bitmap;
+        }
+        try {
+            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap.recycle();
+            return bmRotated;
+        }
+        catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+
+        String[] proj = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        cursor.moveToNext();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
+
+        cursor.close();
+        return path;
+    }
+
+    public static void delPhoto(int position){
+        photoList.remove(position);
+    }
+
 }

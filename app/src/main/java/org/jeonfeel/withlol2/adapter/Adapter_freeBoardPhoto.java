@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import org.jeonfeel.withlol2.R;
+import org.jeonfeel.withlol2.activity.Activity_ModifyFreeBoardPost;
 import org.jeonfeel.withlol2.activity.Activity_writingFreeBoardPost;
 
 import java.util.ArrayList;
@@ -33,16 +34,6 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
         this.mContext = mContext;
         this.kind = kind;
     }
-
-//    public Adapter_freeBoardPhoto(ArrayList<Bitmap> albumImgList, Context mContext,
-//                                  RecyclerView recyclerView,String postId,String activityKind){
-//        this.albumImgList = albumImgList;
-//        this.mContext = mContext;
-//        this.recyclerView = recyclerView;
-//        this.postId = postId;
-//        this.activityKind = activityKind;
-//    }
-//    public Adapter_freeBoardPhoto(){}
 
     @NonNull
     @Override
@@ -66,9 +57,6 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
             Glide.with(mContext).load(albumImgList.get(position))
                     .into(holder.iv_photo);
         }
-        if(kind.equals("modify")){
-            holder.btn_photoDel.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -89,10 +77,15 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
                 @Override
                 public void onClick(View v) {
 
+                    if(kind.equals("writing")) {
                         Activity_writingFreeBoardPost fp = new Activity_writingFreeBoardPost();
                         fp.delPhoto(getLayoutPosition());
                         notifyDataSetChanged();
-
+                    }else if(kind.equals("modify")){
+                        Activity_ModifyFreeBoardPost fp = new Activity_ModifyFreeBoardPost();
+                        fp.delPhoto(getLayoutPosition());
+                        notifyDataSetChanged();
+                    }
                 }
             });
         }

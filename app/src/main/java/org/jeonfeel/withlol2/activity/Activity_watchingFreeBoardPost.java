@@ -83,7 +83,6 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         sampleItem = new ArrayList<>();
         requestManager = Glide.with(Activity_watchingFreeBoardPost.this);
 
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
@@ -450,6 +449,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         intent.putExtra("postContent", postContent);
                         intent.putExtra("summonerName",summonerName);
                         intent.putExtra("imgExistence",imgExistence);
+                        intent.putExtra("postDate",postDate);
 
                         startActivity(intent);
 
@@ -495,10 +495,6 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                                         });
                                 AlertDialog msgDlg = msgBuilder.create();
                                 msgDlg.show();
-                            }else if(item.getItemId() == R.id.btn_imageRetouch){
-//                                Intent intent = new Intent(Activity_watchingFreeBoardPost.this,Activity_freeBoardImageRetouch.class);
-//                                intent.putExtra("postId",postId);
-//                                startActivity(intent);
                             }
                             return false;
                         }
@@ -522,23 +518,20 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         });
     }
     private void setBtn_writtenRefresh(){
-        btn_freeBoardPostRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplication(), Activity_watchingFreeBoardPost.class);
+        btn_freeBoardPostRefresh.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplication(), Activity_watchingFreeBoardPost.class);
 
-                intent.putExtra("postId",postId);
-                intent.putExtra("writerUid",writerUid);
-                intent.putExtra("postTitle",postTitle);
-                intent.putExtra("postContent",postContent);
-                intent.putExtra("summonerTier",summonerTier);
-                intent.putExtra("summonerName",summonerName);
-                intent.putExtra("postDate",postDate);
-                intent.getIntExtra("commentCount",0);
+            intent.putExtra("postId",postId);
+            intent.putExtra("writerUid",writerUid);
+            intent.putExtra("postTitle",postTitle);
+            intent.putExtra("postContent",postContent);
+            intent.putExtra("summonerTier",summonerTier);
+            intent.putExtra("summonerName",summonerName);
+            intent.putExtra("postDate",postDate);
+            intent.getIntExtra("commentCount",0);
 
-                finish();
-                startActivity(intent);
-            }
+            finish();
+            startActivity(intent);
         });
 
     }

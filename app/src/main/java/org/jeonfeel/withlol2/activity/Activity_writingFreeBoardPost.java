@@ -55,7 +55,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     private static final int PICK_FROM_ALBUM = 111;
     private RecyclerView photoRecyclerView;
     private static ArrayList<Bitmap> uploadPhotoList;
-    public static ArrayList<Uri> uploadPhotoList2;
+    public static ArrayList<Uri> photoList;
     private Adapter_freeBoardPhoto adapter;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -158,15 +158,15 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
 
                    uploadPhotoList = new ArrayList<>();
-                   uploadPhotoList2 = new ArrayList<>();
+                   photoList = new ArrayList<>();
                    for(int i = 0; i < clipData.getItemCount(); i++){
-                           uploadPhotoList2.add(clipData.getItemAt(i).getUri());
+                           photoList.add(clipData.getItemAt(i).getUri());
                    }
                    photoRecyclerView.setVisibility(View.VISIBLE);
                    imgExistence = 1;
                }
            }
-            adapter = new Adapter_freeBoardPhoto(uploadPhotoList2,this,"writing");
+            adapter = new Adapter_freeBoardPhoto(photoList,this,"writing");
             Log.d("qqqq",adapter.getItemCount()+"");
             photoRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -186,10 +186,10 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
 
-                for(int i = 0; i < uploadPhotoList2.size(); i++){
-                    Bitmap bit = resize(this,uploadPhotoList2.get(i),500);
+                for(int i = 0; i < photoList.size(); i++){
+                    Bitmap bit = resize(this, photoList.get(i),500);
 
-                    String path = getRealPathFromURI(uploadPhotoList2.get(i));
+                    String path = getRealPathFromURI(photoList.get(i));
 
                     ExifInterface exif = new ExifInterface(path);
 
@@ -241,7 +241,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     }
 
     public static void delPhoto(int position){
-        uploadPhotoList2.remove(position);
+        photoList.remove(position);
     }
 
     public void getCurrentUserInfo(){

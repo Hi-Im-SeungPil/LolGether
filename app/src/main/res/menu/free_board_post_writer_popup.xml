@@ -3,10 +3,7 @@
 
     <item
         android:id="@+id/btn_postRetouch"
-        android:title="내용 수정" />
-    <item
-        android:id="@+id/btn_imageRetouch"
-        android:title="사진 수정(추가)" />
+        android:title="글 수정" />
     <item
         android:id="@+id/btn_postDel"
         android:title="글 삭제" />
