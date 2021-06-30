@@ -53,10 +53,16 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
     public void onBindViewHolder(@NonNull mViewHolder holder, int position) {
         //앨범에서 가져온 이미지 표시
 //            holder.iv_photo.setImageBitmap(albumImgList.get(position));
+
         if(isValidContextForGlide(mContext)) {
             Glide.with(mContext).load(albumImgList.get(position))
                     .into(holder.iv_photo);
         }
+
+        if(kind.equals("modifyFirst")){
+            holder.btn_photoDel.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -81,10 +87,12 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
                         Activity_writingFreeBoardPost fp = new Activity_writingFreeBoardPost();
                         fp.delPhoto(getLayoutPosition());
                         notifyDataSetChanged();
+
                     }else if(kind.equals("modify")){
                         Activity_ModifyFreeBoardPost fp = new Activity_ModifyFreeBoardPost();
                         fp.delPhoto(getLayoutPosition());
                         notifyDataSetChanged();
+
                     }
                 }
             });

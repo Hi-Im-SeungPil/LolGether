@@ -59,7 +59,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
 
     private String currentSummonerName,currentSummonerTier,currentUserUid;
     private String postId;
-    private int postDate;
+    private long postDate;
 
     private static ArrayList<Bitmap> uploadPhotoList;
     private static ArrayList<Uri> photoList;
@@ -101,10 +101,12 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
 //        String summonerTier = intent.getStringExtra("summonerTier");
         String summonerName = intent.getStringExtra("summonerName");
         imgExistence = intent.getIntExtra("imgExistence",0);
-        postDate = intent.getIntExtra("postDate",0);
+        postDate = intent.getLongExtra("postDate",0);
 
         et_modifyFreeBoardTitle.setText(postTitle);
         et_modifyFreeBoardContent.setText(postContent);
+
+        photoList = new ArrayList<>();
 
         if(summonerName.equals("롤게더 익명")){
             cb_modifyAnonymity.setChecked(true);
@@ -114,7 +116,6 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
             modifyPhotoRecyclerView.setVisibility(View.VISIBLE);
-            photoList = new ArrayList<>();
 
             storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
                 @Override
@@ -126,7 +127,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Uri> task) {
                                 if(task.isSuccessful()) {
                                     photoList.add(task.getResult());
-                                    Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(photoList,Activity_ModifyFreeBoardPost.this,"modify");
+                                    Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(photoList,Activity_ModifyFreeBoardPost.this,"modifyFirst");
                                     modifyPhotoRecyclerView.setAdapter(adapter);
                                 }else{
                                     Toast.makeText(Activity_ModifyFreeBoardPost.this, "이미지를 불러오는 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
@@ -187,9 +188,8 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
 
             if (data.getClipData() != null) {
                 ClipData clipData = data.getClipData();
-                imgExistence = 0;
 
-                if(photoList != null) {
+                if(photoList.size() != 0) {
                     photoList.clear();
                 }
 
@@ -198,11 +198,10 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                 if(clipData.getItemCount() > 10){
                     Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
 
-                    if(photoList != null) {
+                    if(photoList.size() != 0) {
                         photoList.clear();
                     }
 
-                    imgExistence = 0;
                     return;
                 }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
 
@@ -211,12 +210,11 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                     if(photoList != null) {
                         photoList.clear();
                     }
+
                     for(int i = 0; i < clipData.getItemCount(); i++){
                         photoList.add(clipData.getItemAt(i).getUri());
                     }
                     modifyPhotoRecyclerView.setVisibility(View.VISIBLE);
-                    imgExistence = 1;
-                    modifyPhoto = true;
                 }
             }
             Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(photoList,this,"modify");
@@ -234,16 +232,22 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                 String title = et_modifyFreeBoardTitle.getText().toString();
                 String content = et_modifyFreeBoardContent.getText().toString();
 
+                if(photoList.size() != 0){
+                    imgExistence = 1;
+                }else{
+                    imgExistence = 0;
+                }
+
                 if(title.length() == 0){
                     Toast.makeText(Activity_ModifyFreeBoardPost.this, "제목을 입력해 주세요!", Toast.LENGTH_SHORT).show();
                 }else if(content.length() == 0){
                     Toast.makeText(Activity_ModifyFreeBoardPost.this, "내용을 입력해 주세요!", Toast.LENGTH_SHORT).show();
-                }else if(imgExistence == 1 && modifyPhoto == true && photoList != null){
+                }else if(imgExistence == 1 && photoList.size() != 0){
 
                         FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
+                        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
 
-                        storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                        storageRef.child(postId).listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
                             @Override
                             public void onSuccess(ListResult listResult) {
                                 for(StorageReference item : listResult.getItems()){
@@ -253,28 +257,31 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                         });
 
                         for(int i = 0; i < photoList.size(); i++){
+
                             Bitmap bit = resize(Activity_ModifyFreeBoardPost.this,photoList.get(i),500);
 
-                            String path = getRealPathFromURI(photoList.get(i));
+                                String path = getRealPathFromURI(photoList.get(i));
 
-                            ExifInterface exif = null;
-                            try {
-                                exif = new ExifInterface(path);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                                ExifInterface exif = null;
+                                try {
+                                    exif = new ExifInterface(path);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
 
-                            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                                    ExifInterface.ORIENTATION_UNDEFINED);
+                                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                                        ExifInterface.ORIENTATION_UNDEFINED);
 
-                            bit = rotateBitmap(bit,orientation);
+                                bit = rotateBitmap(bit, orientation);
 
                             uploadPhotoList.add(bit);
                         }
 
                         for (int i = 0; i < uploadPhotoList.size(); i++) {
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
                             uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
                             byte[] data = baos.toByteArray();
 
                             storageRef.child(postId + "/" + i)
@@ -293,7 +300,6 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                             for(StorageReference item : listResult.getItems()){
                                 item.delete();
                             }
-                            imgExistence = 0;
                         }
                     });
                 }
@@ -308,13 +314,16 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                         currentSummonerTier = mainActivity.getCurrentSummonerTier();
                     }
 
+                    Intent getInt = getIntent();
+                    int commentC = getInt.getIntExtra("commentCount",0);
+
                     SaveFreeBoardPost saveFreeBoardPost = new SaveFreeBoardPost(postId, currentUserUid, currentSummonerName, currentSummonerTier, title, content,
-                            0, postDate, imgExistence);
+                            commentC, postDate, imgExistence);
 
                     mDatabase.child("freeBoard").child(postId).setValue(saveFreeBoardPost);
 
-                    Activity_freeBoard ac = (Activity_freeBoard) Activity_freeBoard.activity;
-                    ac.finish();
+                    Activity_freeBoard ac2 = (Activity_freeBoard) Activity_freeBoard.activity;
+                    ac2.finish();
 
                     Intent intent = new Intent(Activity_ModifyFreeBoardPost.this, Activity_freeBoard.class);
 
@@ -327,6 +336,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
     }
 
     private Bitmap resize(Context context, Uri uri, int resize){
+
         Bitmap resizeBitmap=null;
 
         BitmapFactory.Options options = new BitmapFactory.Options();

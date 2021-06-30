@@ -1,6 +1,7 @@
 package org.jeonfeel.withlol2.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 
 public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
+    public static Activity activity;
     public static final int REQUEST_CODE = 1111;
     private Button btn_freeBoardWriteBackspace,btn_addPhoto,btn_postWrite;
     private EditText et_freeBoardTitle,et_freeBoardContent;
@@ -149,16 +151,31 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
            if (data.getClipData() != null) {
                ClipData clipData = data.getClipData();
                imgExistence = 0;
+
+               if(photoList != null) {
+                   photoList.clear();
+               }
+
                photoRecyclerView.setVisibility(View.GONE);
 
                if(clipData.getItemCount() > 10){
                    Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
+
+                   if(photoList != null) {
+                       photoList.clear();
+                   }
+
                    imgExistence = 0;
                    return;
                }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
 
                    uploadPhotoList = new ArrayList<>();
                    photoList = new ArrayList<>();
+
+                   if(photoList != null) {
+                       photoList.clear();
+                   }
+
                    for(int i = 0; i < clipData.getItemCount(); i++){
                            photoList.add(clipData.getItemAt(i).getUri());
                    }
@@ -182,7 +199,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
         }else if(content.length() == 0){
             Toast.makeText(this, "내용을 입력해 주세요!", Toast.LENGTH_SHORT).show();
         }else {
-            if(imgExistence == 1) {
+            if(imgExistence == 1 && photoList.size() != 0) {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
 
@@ -213,6 +230,8 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                         }
                     });
                 }
+            }else{
+                imgExistence = 0;
             }
             if (cb_anonymity.isChecked()) {
                 currentSummonerName = "롤게더 익명";
@@ -224,7 +243,6 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
             }
             SaveFreeBoardPost saveFreeBoardPost = new SaveFreeBoardPost(postId, currentUserUid, currentSummonerName, currentSummonerTier, title, content,
                     0, System.currentTimeMillis(), imgExistence);
-            imgExistence = 0;
 
             mDatabase.child("freeBoard").child(postId).setValue(saveFreeBoardPost);
             mDatabase.child("users").child(currentUserUid).child("freeBoardPost").child(postId).child("postId").setValue(postId);

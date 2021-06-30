@@ -55,8 +55,6 @@ import java.util.ArrayList;
 
 public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
-    public static Activity activity;
-
     private Button btn_freeBoardWrittenBackspace,btn_freeBoardPostRefresh,btn_freeBoardWriterRecord,btn_freeBoardWriteComment,btn_freeBoardPostPopUp;
     private TextView tv_freeBoardTitle,tv_freeBoardContent,tv_freeBoardWrittenDate,tv_freeBoardSummonerName;
     private EditText et_freeBoardWriteComment;
@@ -450,8 +448,11 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         intent.putExtra("summonerName",summonerName);
                         intent.putExtra("imgExistence",imgExistence);
                         intent.putExtra("postDate",postDate);
+                        intent.putExtra("commentCount",commentCount);
 
                         startActivity(intent);
+
+                        finish();
 
                             } else if (item.getItemId() == R.id.btn_postDel) {
                                 AlertDialog.Builder msgBuilder = new AlertDialog.Builder(Activity_watchingFreeBoardPost.this)
