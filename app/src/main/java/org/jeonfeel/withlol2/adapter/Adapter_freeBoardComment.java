@@ -62,6 +62,11 @@ public class Adapter_freeBoardComment extends RecyclerView.Adapter<Adapter_freeB
         this.context = context;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
     @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

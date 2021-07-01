@@ -9,22 +9,22 @@ public class User {
     public String tier;
     public String rank;
     public String token;
-    public int wins;
-    public int losses;
+    public int leaguePoint;
     public int notification;
+    public int summonerLevel;
 
     @Keep
     User(){}
 
-    public User(String email, String summonerName, String tier, String rank,String token, int wins, int losses,int notification) {
+    public User(String email, String summonerName, String tier, String rank,String token, int leaguePoint, int notification,int summonerLevel) {
 
         this.email = email;
         this.summonerName = summonerName;
         this.tier = tier;
         this.rank = rank;
         this.token = token;
-        this.wins = wins;
-        this.losses = losses;
+        this.leaguePoint = leaguePoint;
         this.notification = notification;
+        this.summonerLevel = summonerLevel;
     }
 }

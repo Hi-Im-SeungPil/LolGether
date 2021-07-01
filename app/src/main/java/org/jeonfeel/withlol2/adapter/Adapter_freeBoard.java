@@ -73,6 +73,11 @@ public class Adapter_freeBoard extends RecyclerView.Adapter<Adapter_freeBoard.Cu
         return viewHolder;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
 
     @Override
     public void onBindViewHolder(@NonNull CustomViewHolder viewholder, int position) {

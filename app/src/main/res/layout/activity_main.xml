@@ -107,7 +107,7 @@
                         android:fontFamily="@font/nanumroundeb" />
 
                     <TextView
-                        android:id="@+id/summonerLevel"
+                        android:id="@+id/tv_summonerLevel"
                         android:layout_width="50dp"
                         android:layout_height="30dp"
                         app:layout_constraintBottom_toBottomOf="parent"

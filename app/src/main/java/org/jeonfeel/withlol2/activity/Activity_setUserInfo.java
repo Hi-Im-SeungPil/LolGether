@@ -1,9 +1,7 @@
 package org.jeonfeel.withlol2.activity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,7 +41,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 111;
 
-    private TextView tv_setSummonerName,tv_setSummonerTier,tv_setSummonerWinningRate;
+    private TextView tv_setSummonerName,tv_setSummonerTier, tv_setSummonerLeaguePoints,tv_summonerLevel;
     private ImageView img_setUserTier;
     private Button btn_setSearchUserId,btn_start;
     private EditText et_setSearchUserId;
@@ -54,8 +51,9 @@ public class Activity_setUserInfo extends AppCompatActivity {
     private GetSummonerInfo getSummonerInfo;
     private JSONObject json_userId;
     private JSONArray json_userInfo;
-    private int wins,losses;
+    private int leaguePoint,summonerLevel;
     private FirebaseAuth mAuth;
+
     private DatabaseReference mDatabase;
 
     int check = 0;
@@ -70,11 +68,12 @@ public class Activity_setUserInfo extends AppCompatActivity {
 
         tv_setSummonerName = findViewById(R.id.tv_setSummonerName);
         tv_setSummonerTier = findViewById(R.id.tv_setSummonerTier);
-        tv_setSummonerWinningRate = findViewById(R.id.tv_setSummonerWinningRate);
+        tv_setSummonerLeaguePoints = findViewById(R.id.tv_setSummonerLeaguePoints);
         img_setUserTier = findViewById(R.id.img_setUserTier);
         et_setSearchUserId = findViewById(R.id.et_setSearchUserId);
         btn_start = findViewById(R.id.btn_start);
         btn_setSearchUserId = findViewById(R.id.btn_setSearchUserId);
+        tv_summonerLevel = findViewById(R.id.tv_summonerLevel);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -110,6 +109,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
             json_userId = getLoLId.execute(url).get();
             if(json_userId != null ) {
                 resultId = json_userId.getString("id");
+                summonerLevel = json_userId.getInt("summonerLevel");
             }
         }catch (InterruptedException e) {
             e.printStackTrace();
@@ -140,8 +140,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 tier = jsonObject.getString("tier");
                 rank = jsonObject.getString("rank");
                 summonerName = et_setSearchUserId.getText().toString();
-                wins = jsonObject.getInt("wins");
-                losses = jsonObject.getInt("losses");
+                leaguePoint = jsonObject.getInt("leaguePoints");
 
         }catch (InterruptedException e) {
             e.printStackTrace();
@@ -153,7 +152,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
     }
     // 유저 정보 insert 매서드
     private void writeNewUser(final String UID, final String email, final String mSummonerName,
-                              final String mTier, final String mRank, final int mWins, final int mLosses) {
+                              final String mTier, final String mRank, final int leaguePoint, final int summonerLevel) {
 
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
@@ -164,7 +163,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 }
                 String token = task.getResult(); // push알림을 위한 token
 
-                User user = new User(email,mSummonerName,mTier,mRank,token,mWins,mLosses,1);
+                User user = new User(email,mSummonerName,mTier,mRank,token,leaguePoint,1,summonerLevel);
 
                 mDatabase.child("users").child(UID).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() { // firebase insert
                     @Override
@@ -227,13 +226,13 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 summonerName = et_setSearchUserId.getText().toString();
                 tier = "UnRanked";
                 rank = "UnRanked";
-                wins = 0;
-                losses = 0;
+                leaguePoint = 0;
 
                 img_setUserTier.setImageResource(R.drawable.unranked);
                 tv_setSummonerName.setText(summonerName);
                 tv_setSummonerTier.setText("UnRanked");
-                tv_setSummonerWinningRate.setText("UnRanked");
+                tv_setSummonerLeaguePoints.setText("UnRanked");
+                tv_summonerLevel.setText(summonerLevel);
             }
         }
         public void setBtn_setSearchUserId(){
@@ -254,13 +253,13 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 img_setUserTier.setImageResource(R.drawable.img_sadbee);
                 tv_setSummonerName.setText("");
                 tv_setSummonerTier.setText("");
-                tv_setSummonerWinningRate.setText("");
+                tv_setSummonerLeaguePoints.setText("");
                 check = 0;
             }
         }
         public void setBtn_start(){
             if(check == 1) {
-                writeNewUser(Uid, uEmail, summonerName, tier, rank, wins, losses);
+                writeNewUser(Uid, uEmail, summonerName, tier, rank, leaguePoint,summonerLevel);
             }else if(check == 0){
                 Toast.makeText(getApplication(), "소환사 정보를 등록해 주세요", Toast.LENGTH_SHORT).show();
             }
@@ -268,7 +267,8 @@ public class Activity_setUserInfo extends AppCompatActivity {
         public void setSummonerTextView(){
             tv_setSummonerName.setText(summonerName);
             tv_setSummonerTier.setText(tier + " " + rank);
-            tv_setSummonerWinningRate.setText("승 : " + wins +"\n" + "패 : " + losses);
+            tv_setSummonerLeaguePoints.setText(leaguePoint + " 점");
+            tv_summonerLevel.setText("LV."+summonerLevel);
         }
 
 }

@@ -70,7 +70,7 @@
                 android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_setSummonerWinningRate"
+                android:id="@+id/tv_setSummonerLeaguePoints"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/tv_round"
@@ -91,8 +91,8 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout_userInfo"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="10dp"
-        android:text="LV : 15"
-        android:textSize="30sp"
+        android:text="LV.500"
+        android:textSize="25sp"
         android:layout_marginLeft="10dp"
         android:fontFamily="@font/nanumroundeb"/>
 

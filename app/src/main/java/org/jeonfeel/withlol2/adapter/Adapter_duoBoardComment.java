@@ -78,6 +78,11 @@ public class Adapter_duoBoardComment extends RecyclerView.Adapter<Adapter_duoBoa
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull final CustomViewHolder holder, final int position) {
 
         holder.tv_commentContent.setText(items.get(position).getCommentContent());

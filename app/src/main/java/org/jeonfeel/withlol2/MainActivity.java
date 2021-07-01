@@ -4,15 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,7 +44,6 @@ import org.jeonfeel.withlol2.activity.Activity_login;
 import org.jeonfeel.withlol2.activity.Activity_myPost;
 import org.jeonfeel.withlol2.activity.Activity_searchingSummoner;
 import org.jeonfeel.withlol2.activity.Activity_summonerChange;
-import org.jeonfeel.withlol2.activity.Activity_watchingDuoBoardPost;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText et_idSearch;
     private Button btn_idSearch;
     private ImageView img_userTier, iv_mainPopup;
-    private TextView tv_summonerName, tv_summonerRank, tv_summonerWinningRate;
+    private TextView tv_summonerName, tv_summonerRank, tv_summonerLeaguePoints,tv_summonerLevel;
     private LinearLayout linear_soloRankUnRanked, linear_soloRankIron, linear_soloRankBronze, linear_soloRankSilver,
             linear_soloRankGold, linear_soloRankPlatinum, linear_soloRankDiamond,linear_freeBoard;
     private TextView tv_summonerUpdate;
@@ -79,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     public static Activity activity;
 
     private String currentUserRank;
-    int currentUserWins, currentUserLosses;
+    private int currentUserLeaguePoints,currentUserLevel;
 
     private GetLoLId getLoLId;
     private GetSummonerInfo getSummonerInfo;
@@ -180,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         linear_soloRankDiamond = findViewById(R.id.linear_soloRankDiamond);
         tv_summonerName = findViewById(R.id.tv_summonerName);
         tv_summonerRank = findViewById(R.id.tv_summonerRank);
-        tv_summonerWinningRate = findViewById(R.id.tv_summonerWinningRate);
+        tv_summonerLeaguePoints = findViewById(R.id.tv_summonerWinningRate);
         tv_summonerUpdate = findViewById(R.id.tv_summonerUpdate);
         iv_mainPopup = findViewById(R.id.iv_mainPopup);
         linear_freeRankUnRanked = findViewById(R.id.linear_freeRankUnRanked);
@@ -199,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
         mainSoloBoardGroup = findViewById(R.id.mainSoloBoardGroup);
         mainFreeRankBoardGroup = findViewById(R.id.mainFreeRankBoardGroup);
         linear_freeBoard = findViewById(R.id.linear_freeBoard);
+        tv_summonerLevel = findViewById(R.id.tv_summonerLevel);
     }
 
 
@@ -221,17 +218,18 @@ public class MainActivity extends AppCompatActivity {
                 currentSummonerName = snapshot.child("summonerName").getValue(String.class);
                 currentSummonerTier = snapshot.child("tier").getValue(String.class);
                 currentUserRank = snapshot.child("rank").getValue(String.class);
-                currentUserWins = snapshot.child("wins").getValue(int.class);
-                currentUserLosses = snapshot.child("losses").getValue(int.class);
                 currentUserNotificationStatus = snapshot.child("notification").getValue(int.class);
+                currentUserLevel = snapshot.child("summonerLevel").getValue(int.class);
+                currentUserLeaguePoints = snapshot.child("leaguePoint").getValue(int.class);
 
+                tv_summonerLevel.setText("LV."+currentUserLevel);
                 tv_summonerName.setText(currentSummonerName);
                 if(currentSummonerTier.equals("UnRanked")){
                     tv_summonerRank.setText("언 랭");
-                    tv_summonerWinningRate.setText("챌린저 가즈아!");
+                    tv_summonerLeaguePoints.setText("챌린저 가즈아!");
                 }else {
                     tv_summonerRank.setText(currentSummonerTier + " " + currentUserRank);
-                    tv_summonerWinningRate.setText("승 " + currentUserWins + " / 패 " + currentUserLosses);
+                    tv_summonerLeaguePoints.setText(currentUserLeaguePoints + " 점");
                 }
                 switch (currentSummonerTier) {
                     case "UnRanked":
@@ -331,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
             json_userId = getLoLId.execute(url).get();
             if (json_userId != null) {
                 resultId = json_userId.getString("id");
+                currentUserLevel = json_userId.getInt("summonerLevel");
             } else {
                 Toast.makeText(this, "닉네임을 변경 하셨다면, 소환사 닉네임 변경을 해주세요!", Toast.LENGTH_LONG).show();
                 return;
@@ -358,22 +357,23 @@ public class MainActivity extends AppCompatActivity {
             }
                 currentSummonerTier = jsonObject.getString("tier");
                 currentUserRank = jsonObject.getString("rank");
-                currentUserWins = jsonObject.getInt("wins");
-                currentUserLosses = jsonObject.getInt("losses");
+                currentUserLeaguePoints = jsonObject.getInt("leaguePoints");
+
+                tv_summonerLevel.setText("LV."+currentUserLevel);
 
                 if (currentSummonerTier.equals("UnRanked")) {
                     tv_summonerRank.setText("언 랭");
-                    tv_summonerWinningRate.setText("챌린저 가즈아!");
+                    tv_summonerLeaguePoints.setText("챌린저 가즈아!");
                 } else {
                     tv_summonerRank.setText(currentSummonerTier + " " + currentUserRank);
-                    tv_summonerWinningRate.setText("승 " + currentUserWins + " / 패 " + currentUserLosses);
+                    tv_summonerLeaguePoints.setText(currentUserLeaguePoints + " 점");
                 }
 
                 mDatabase.child("users").child(currentUserUid).child("tier").setValue(currentSummonerTier);
                 mDatabase.child("users").child(currentUserUid).child("rank").setValue(currentUserRank);
-                mDatabase.child("users").child(currentUserUid).child("wins").setValue(currentUserWins);
-                mDatabase.child("users").child(currentUserUid).child("losses")
-                        .setValue(currentUserLosses).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mDatabase.child("users").child(currentUserUid).child("leaguePoint").setValue(currentUserLeaguePoints);
+                mDatabase.child("users").child(currentUserUid).child("summonerLevel")
+                        .setValue(currentUserLevel).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(MainActivity.this, "갱신이 완료 되었습니다!", Toast.LENGTH_SHORT).show();

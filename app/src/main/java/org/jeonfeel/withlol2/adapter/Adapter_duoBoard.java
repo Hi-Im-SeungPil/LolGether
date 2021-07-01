@@ -63,6 +63,11 @@ public class Adapter_duoBoard extends RecyclerView.Adapter<Adapter_duoBoard.Cust
     public Adapter_duoBoard() {}
 
     @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
         View view = LayoutInflater.from(viewGroup.getContext())
