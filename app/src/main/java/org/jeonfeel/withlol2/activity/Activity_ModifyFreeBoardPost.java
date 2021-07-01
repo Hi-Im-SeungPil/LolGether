@@ -206,6 +206,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                 }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
 
                     uploadPhotoList = new ArrayList<>();
+                    modifyPhoto = true;
 
                     if(photoList != null) {
                         photoList.clear();
@@ -242,7 +243,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                     Toast.makeText(Activity_ModifyFreeBoardPost.this, "제목을 입력해 주세요!", Toast.LENGTH_SHORT).show();
                 }else if(content.length() == 0){
                     Toast.makeText(Activity_ModifyFreeBoardPost.this, "내용을 입력해 주세요!", Toast.LENGTH_SHORT).show();
-                }else if(imgExistence == 1 && photoList.size() != 0){
+                }else if(imgExistence == 1 && photoList.size() != 0 && modifyPhoto == true){
 
                         FirebaseStorage storage = FirebaseStorage.getInstance();
                         StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
@@ -302,8 +303,35 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                             }
                         }
                     });
-                }
+                }else if(imgExistence == 1 && photoList.size() != 0 && modifyPhoto == false) {
 
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
+
+                    for (int i = 0; i < photoList.size(); i++) {
+                        try {
+                            Bitmap bit = MediaStore.Images.Media.getBitmap(Activity_ModifyFreeBoardPost.this.getContentResolver(), photoList.get(i));
+                            uploadPhotoList.add(bit);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    for (int i = 0; i < uploadPhotoList.size(); i++) {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                        uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                        byte[] data = baos.toByteArray();
+
+                        storageRef.child(postId + "/" + i)
+                                .putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            }
+                        });
+                    }
+                }
                     if (cb_modifyAnonymity.isChecked()) {
                         currentSummonerName = "롤게더 익명";
                         currentSummonerTier = "anonymity";

@@ -126,7 +126,6 @@
         android:gravity="center"
         android:textSize="17sp"
         android:textColor="#373737"
-        android:fontFamily="@font/nanumroundeb"
         android:background="@drawable/spinner"/>
 
     <EditText
@@ -141,8 +140,7 @@
         android:layout_margin="10dp"
         android:hint="상세 내용 입력"
         android:textSize="15sp"
-        android:fontFamily="@font/nanumroundb"
         android:padding="10dp"
-        android:background="@drawable/spinner"/>
+        android:background="@drawable/spinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

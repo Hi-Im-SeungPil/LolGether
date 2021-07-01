@@ -1,8 +1,6 @@
 package org.jeonfeel.withlol2.activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -25,31 +22,27 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.kakao.sdk.auth.model.OAuthToken;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.kakao.sdk.common.KakaoSdk;
-import com.kakao.sdk.common.util.KakaoJson;
 import com.kakao.sdk.user.UserApiClient;
-import com.kakao.sdk.user.model.AccessTokenInfo;
-import com.kakao.sdk.user.model.User;
 
 import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.R;
-import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
+import java.util.concurrent.TimeUnit;
 
 public class Activity_login extends AppCompatActivity {
     private static final String TAG = "GoogleActivity";
@@ -61,7 +54,7 @@ public class Activity_login extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
 
-    private Button btn_googleLogin,btn_kakaoLogin;
+    private Button btn_googleLogin, btn_phoneLogin;
     private LoginButton btn_facebookLogin;
 
     @Override
@@ -69,14 +62,13 @@ public class Activity_login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        KakaoSdk.init(this,"e65ce655bde90469c6c294ccff852ec0");
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
         btn_googleLogin = findViewById(R.id.btn_googleLogin);
         btn_facebookLogin = findViewById(R.id.btn_facebookLogin);
-         btn_kakaoLogin = findViewById(R.id.btn_kakaoLogin);
+        btn_phoneLogin = findViewById(R.id.btn_phoneLogin);
+
         googleSignIn();
         facebookSignIn();
 
@@ -88,10 +80,10 @@ public class Activity_login extends AppCompatActivity {
                 signIn();
             }
         });
-        btn_kakaoLogin.setOnClickListener(new View.OnClickListener() {
+        btn_phoneLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                kakaoLogin();
+                btn_phoneLogin();
             }
         });
 
@@ -207,51 +199,10 @@ public class Activity_login extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private void kakaoLogin() {
-        if(UserApiClient.getInstance().isKakaoTalkLoginAvailable(Activity_login.this)){
-            UserApiClient.getInstance().loginWithKakaoTalk(Activity_login.this, (oAuthToken, error) -> {
-                if (error != null) {
-                    Log.e(TAG, "로그인 실패", error);
-                } else if (oAuthToken != null) {
-                    Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
-                    oAuthToken.getAccessToken();
+    private void btn_phoneLogin() {
 
-                }
-                return null;
-            });
-        }else{
-            UserApiClient.getInstance().loginWithKakaoAccount(Activity_login.this, (oAuthToken, error) -> {
-                if (error != null) {
-                    Log.e(TAG, "로그인 실패", error);
-                } else if (oAuthToken != null) {
-                    Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
-                    customLogin(oAuthToken.getAccessToken());
-                }
-                return null;
-            });
-        }
     }
 
-    private void customLogin(String mCustomToken){
-        mAuth.signInWithCustomToken(mCustomToken)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCustomToken:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            loginSuccess(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCustomToken:failure", task.getException());
-                            Toast.makeText(Activity_login.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            loginSuccess(null);
-                        }
-                    }
-                });
-    }
     public void signOut() {
         mAuth.signOut();
     }
