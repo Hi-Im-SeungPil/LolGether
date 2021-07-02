@@ -59,10 +59,6 @@ public class Adapter_freeBoardPhoto extends RecyclerView.Adapter<Adapter_freeBoa
                     .into(holder.iv_photo);
         }
 
-        if(kind.equals("modifyFirst")){
-            holder.btn_photoDel.setVisibility(View.GONE);
-        }
-
     }
 
     @Override

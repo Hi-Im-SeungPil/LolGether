@@ -112,8 +112,7 @@
                         android:layout_height="30dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
-                        android:text="LV.255"
-                        android:textSize="11sp"
+                        android:textSize="14sp"
                         android:gravity="center"
                         android:fontFamily="@font/nanumroundeb"
                         android:textColor="#000000"/>
@@ -143,7 +142,6 @@
                         android:textSize="17sp"
                         android:textColor="#FFFFFFFF"
                         android:layout_weight="1"
-                        android:text="SKT T1 FAKER"
                         android:fontFamily="@font/nanumroundeb"/>
 
                     <TextView
@@ -154,8 +152,7 @@
                         android:textSize="17sp"
                         android:textColor="#FFFFFFFF"
                         android:layout_weight="1"
-                        android:fontFamily="@font/nanumroundeb"
-                        android:text="골드 3"/>
+                        android:fontFamily="@font/nanumroundeb"/>
 
                     <TextView
                         android:id="@+id/tv_summonerWinningRate"
@@ -165,7 +162,6 @@
                         android:textSize="15sp"
                         android:textColor="#FFFFFFFF"
                         android:layout_weight="1"
-                        android:text="1500승 / 1500패"
                         android:fontFamily="@font/nanumroundeb"/>
 
                 </LinearLayout>

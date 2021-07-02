@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,11 +46,17 @@ import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.R;
 import org.jeonfeel.withlol2.adapter.Adapter_freeBoardPhoto;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
+import org.jeonfeel.withlol2.etc.URLtoBitmap;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
 
@@ -61,10 +70,12 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
     private String postId;
     private long postDate;
 
-    private static ArrayList<Bitmap> uploadPhotoList;
-    private static ArrayList<Uri> photoList;
+    private ArrayList<Bitmap> uploadPhotoList;
+    public static ArrayList<Uri> photoList;
+    private ArrayList<URL> URLList;
     private int imgExistence = 0;
     private boolean modifyPhoto = false;
+    private int firstPhotoCount,finallyPhotoCount;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,30 +124,35 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
         }
 
         if(imgExistence == 1){
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
-            modifyPhotoRecyclerView.setVisibility(View.VISIBLE);
+            try {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
+                modifyPhotoRecyclerView.setVisibility(View.VISIBLE);
 
-            storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                @Override
-                public void onSuccess(ListResult listResult) {
-                    for (StorageReference item : listResult.getItems()) {
+                storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference item : listResult.getItems()) {
 
-                        item.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if(task.isSuccessful()) {
-                                    photoList.add(task.getResult());
-                                    Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(photoList,Activity_ModifyFreeBoardPost.this,"modifyFirst");
-                                    modifyPhotoRecyclerView.setAdapter(adapter);
-                                }else{
-                                    Toast.makeText(Activity_ModifyFreeBoardPost.this, "이미지를 불러오는 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            item.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if (task.isSuccessful()) {
+                                        photoList.add(task.getResult());
+                                        firstPhotoCount = photoList.size();
+                                        Adapter_freeBoardPhoto adapter = new Adapter_freeBoardPhoto(photoList,Activity_ModifyFreeBoardPost.this,"modify");
+                                        modifyPhotoRecyclerView.setAdapter(adapter);
+                                    } else {
+                                        Toast.makeText(Activity_ModifyFreeBoardPost.this, "이미지를 불러오는 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -178,6 +194,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"),  PICK_FROM_ALBUM);
             }
         });
+
     }
 // 사진 추가 result
     @Override
@@ -202,10 +219,11 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                         photoList.clear();
                     }
 
+                    modifyPhotoRecyclerView.setVisibility(View.GONE);
+
                     return;
                 }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
 
-                    uploadPhotoList = new ArrayList<>();
                     modifyPhoto = true;
 
                     if(photoList != null) {
@@ -226,9 +244,12 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
 
     private void setBtn_freePostModifyWrite(){
         btn_freePostModifyWrite.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             public void onClick(View v) {
 
+                uploadPhotoList = new ArrayList<>();
+                finallyPhotoCount = photoList.size();
                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
                 String title = et_modifyFreeBoardTitle.getText().toString();
                 String content = et_modifyFreeBoardContent.getText().toString();
@@ -245,17 +266,7 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                     Toast.makeText(Activity_ModifyFreeBoardPost.this, "내용을 입력해 주세요!", Toast.LENGTH_SHORT).show();
                 }else if(imgExistence == 1 && photoList.size() != 0 && modifyPhoto == true){
 
-                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
-
-                        storageRef.child(postId).listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                            @Override
-                            public void onSuccess(ListResult listResult) {
-                                for(StorageReference item : listResult.getItems()){
-                                    item.delete();
-                                }
-                            }
-                        });
+                    removeAllPhoto();
 
                         for(int i = 0; i < photoList.size(); i++){
 
@@ -278,59 +289,23 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
                             uploadPhotoList.add(bit);
                         }
 
-                        for (int i = 0; i < uploadPhotoList.size(); i++) {
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    uploadAllPhoto();
 
-                            uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 70, baos);
-
-                            byte[] data = baos.toByteArray();
-
-                            storageRef.child(postId + "/" + i)
-                                    .putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                }
-                            });
-                        }
                     }else if(photoList.size() == 0){
-                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
-                        storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                        @Override
-                        public void onSuccess(ListResult listResult) {
-                            for(StorageReference item : listResult.getItems()){
-                                item.delete();
-                            }
-                        }
-                    });
-                }else if(imgExistence == 1 && photoList.size() != 0 && modifyPhoto == false) {
 
-                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                    StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
+                        removeAllPhoto();
 
-                    for (int i = 0; i < photoList.size(); i++) {
-                        try {
-                            Bitmap bit = MediaStore.Images.Media.getBitmap(Activity_ModifyFreeBoardPost.this.getContentResolver(), photoList.get(i));
-                            uploadPhotoList.add(bit);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                }else if(imgExistence == 1 && modifyPhoto == false && photoList.size() != 0 && finallyPhotoCount != firstPhotoCount){
+
+                    UriToURL();
+
+                    if(uploadPhotoList.size() != 0) {
+                        removeAllPhoto();
+                        uploadAllPhoto();
+                    }else{
+                        Toast.makeText(Activity_ModifyFreeBoardPost.this, "문제가 발생하였습니다.", Toast.LENGTH_SHORT).show();
                     }
 
-                    for (int i = 0; i < uploadPhotoList.size(); i++) {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                        uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 70, baos);
-
-                        byte[] data = baos.toByteArray();
-
-                        storageRef.child(postId + "/" + i)
-                                .putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            }
-                        });
-                    }
                 }
                     if (cb_modifyAnonymity.isChecked()) {
                         currentSummonerName = "롤게더 익명";
@@ -455,4 +430,53 @@ public class Activity_ModifyFreeBoardPost extends AppCompatActivity {
         photoList.remove(position);
     }
 
+    private void removeAllPhoto() {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
+
+        storageRef.child(postId).listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
+                for (StorageReference item : listResult.getItems()) {
+                    item.delete();
+                }
+            }
+        });
+    }
+
+    private void uploadAllPhoto(){
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com");
+
+        Log.d("photo",uploadPhotoList.get(0)+"");
+
+        for (int i = 0; i < uploadPhotoList.size(); i++) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            uploadPhotoList.get(i).compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+            byte[] data = baos.toByteArray();
+
+            storageRef.child(postId + "/" + i)
+                    .putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                }
+            });
+        }
+    }
+
+    private void UriToURL() {
+
+        for(int i = 0; i< photoList.size(); i++){
+            try{
+            URLtoBitmap urLtoBitmap = new URLtoBitmap(new URL(photoList.get(i).toString()));
+            Bitmap bit = urLtoBitmap.execute().get();
+            uploadPhotoList.add(bit);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 }
