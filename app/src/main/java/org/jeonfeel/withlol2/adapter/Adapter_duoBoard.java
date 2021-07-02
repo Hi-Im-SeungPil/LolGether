@@ -64,7 +64,7 @@ public class Adapter_duoBoard extends RecyclerView.Adapter<Adapter_duoBoard.Cust
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        return position;
     }
 
     @Override

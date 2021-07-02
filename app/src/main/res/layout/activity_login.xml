@@ -13,7 +13,7 @@
         android:background="@drawable/img_google_login"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:layout_marginTop="270dp"
+        android:layout_marginTop="290dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,19 +26,10 @@
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:layout_marginTop="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_googleLogin"/>
-
-    <Button
-        android:id="@+id/btn_phoneLogin"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_facebookLogin"
-        android:text="전화번호 인증하기"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -119,8 +119,9 @@
         <item>일반게임</item>
         <item>칼바람 나락</item>
         <item>우르프</item>
+        <item>궁극기 주문서</item>
         <item>단일 모드</item>
-        <item>돌격! 넥서스</item>
+        <item>기타 모드</item>
     </string-array>
 
     <string-array name = "solorank_position_array">

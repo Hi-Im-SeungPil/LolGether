@@ -207,9 +207,11 @@ public class Activity_duoBoard extends AppCompatActivity {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                         saveDuoBoardPost = dataSnapshot.getValue(SaveDuoBoardPost.class);
                         _id = saveDuoBoardPost.getId();
+
                         if(check == 1){
                             pagingPostId = _id;
                         }
+
                         summonerTier = saveDuoBoardPost.getSummonerTier();
                         writtenTier = saveDuoBoardPost.getPostTier();
                         writtenTitle = saveDuoBoardPost.getTitle();
@@ -381,7 +383,7 @@ public class Activity_duoBoard extends AppCompatActivity {
                 break;
             case "일반 / 기타 모드" :
                 boardChild = "normalgame";
-                selectedPosition = "같이하실분";
+                selectedPosition = "일반게임같이하실분";
                 break;
         }
     }

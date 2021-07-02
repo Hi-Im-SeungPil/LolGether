@@ -42,7 +42,7 @@ import java.util.concurrent.ExecutionException;
 public class Activity_summonerChange extends AppCompatActivity {
 
     private ImageView iv_summonerChangeBackspace,iv_summonerChangeTier;
-    private TextView tv_summonerChangeName,tv_summonerChangeTier,tv_summonerChangeWinsLosses;
+    private TextView tv_summonerChangeName,tv_summonerChangeTier,tv_summonerChangeWinsLosses,tv_csummonerLevel;
     private EditText et_summonerChange;
     private Button btn_summonerChangeSearch,btn_summonerSelect;
     private FirebaseAuth mAuth;
@@ -57,7 +57,7 @@ public class Activity_summonerChange extends AppCompatActivity {
     private String userId,resultId;
     private String tier,rank,summonerName;
     private int notificationStatus;
-    private int wins,losses;
+    private int summonerLevel,leaguePoints;
     private int check = 0;
 
     @Override
@@ -118,6 +118,7 @@ public class Activity_summonerChange extends AppCompatActivity {
         et_summonerChange = findViewById(R.id.et_summonerChange);
         btn_summonerChangeSearch = findViewById(R.id.btn_summonerChangeSearch);
         btn_summonerSelect = findViewById(R.id.btn_summonerSelect);
+        tv_csummonerLevel = findViewById(R.id.tv_csummonerLevel);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -136,6 +137,7 @@ public class Activity_summonerChange extends AppCompatActivity {
             json_userId = getLoLId.execute(url).get();
             if(json_userId != null ) {
                 resultId = json_userId.getString("id");
+                summonerLevel = json_userId.getInt("summonerLevel");
             }
         }catch (InterruptedException e) {
             e.printStackTrace();
@@ -165,8 +167,7 @@ public class Activity_summonerChange extends AppCompatActivity {
                 tier = jsonObject.getString("tier");
                 rank = jsonObject.getString("rank");
                 summonerName = et_summonerChange.getText().toString();
-                wins = jsonObject.getInt("wins");
-                losses = jsonObject.getInt("losses");
+                leaguePoints = jsonObject.getInt("leaguePoints");
 
         }catch (InterruptedException e) {
             e.printStackTrace();
@@ -194,6 +195,7 @@ public class Activity_summonerChange extends AppCompatActivity {
             tv_summonerChangeName.setText("");
             tv_summonerChangeTier.setText("");
             tv_summonerChangeWinsLosses.setText("");
+            tv_csummonerLevel.setText("LV.");
             check = 0;
         }
     }
@@ -241,18 +243,18 @@ public class Activity_summonerChange extends AppCompatActivity {
             summonerName = et_summonerChange.getText().toString();
             tier = "UnRanked";
             rank = "UnRanked";
-            wins = 0;
-            losses = 0;
+            leaguePoints = 0;
 
             iv_summonerChangeTier.setImageResource(R.drawable.unranked);
             tv_summonerChangeName.setText(summonerName);
             tv_summonerChangeTier.setText("UnRanked");
             tv_summonerChangeWinsLosses.setText("UnRanked");
+            tv_csummonerLevel.setText("LV."+summonerLevel);
         }
     }
     public void setBtn_summonerSelect(){
         if(check == 1) {
-            changeUser(Uid, summonerName, tier, rank, wins, losses);
+            changeUser(Uid, summonerName, tier, rank,leaguePoints,summonerLevel);
 
             MainActivity ac = (MainActivity) MainActivity.activity;
             ac.finish();
@@ -265,18 +267,19 @@ public class Activity_summonerChange extends AppCompatActivity {
         }
     }
     public void changeUser(String UID, String mSummonerName,
-                           String mTier, String mRank, int mWins, int mLosses){
+                           String mTier, String mRank, int leaguePoints, int summonerLevel){
 
                 mDatabase.child("users").child(UID).child("summonerName").setValue(mSummonerName);
                 mDatabase.child("users").child(UID).child("tier").setValue(mTier);
                 mDatabase.child("users").child(UID).child("rank").setValue(mRank);
-                mDatabase.child("users").child(UID).child("wins").setValue(mWins);
-                mDatabase.child("users").child(UID).child("losses").setValue(mLosses);
+                mDatabase.child("users").child(UID).child("leaguePoint").setValue(leaguePoints);
+                mDatabase.child("users").child(UID).child("summonerLevel").setValue(summonerLevel);
 
     }
     public void setSummonerTextView(){
         tv_summonerChangeName.setText(summonerName);
         tv_summonerChangeTier.setText(tier + " " + rank);
-        tv_summonerChangeWinsLosses.setText("승 : " + wins +"\n" + "패 : " + losses);
+        tv_summonerChangeWinsLosses.setText(leaguePoints + " 점");
+        tv_csummonerLevel.setText("LV."+summonerLevel);
     }
 }

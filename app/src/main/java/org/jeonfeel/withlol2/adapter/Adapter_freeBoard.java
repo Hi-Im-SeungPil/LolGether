@@ -75,7 +75,7 @@ public class Adapter_freeBoard extends RecyclerView.Adapter<Adapter_freeBoard.Cu
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        return position;
     }
 
 

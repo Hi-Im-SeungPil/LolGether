@@ -457,7 +457,7 @@ public class Activity_myPost extends AppCompatActivity {
                             long postDate = saveDuoBoardPost.getPostDate();
                             int commentCount = saveDuoBoardPost.getCommentCount();
                             String writtenUid = saveDuoBoardPost.getUid();
-                            String selectedMic = "off";
+                            String selectedMic = saveDuoBoardPost.getSelectedMic();
                             String boardTitle = saveDuoBoardPost.getBoardTitle();
 
                             Item_duoBoard Item = new Item_duoBoard(_id, writtenUid, summonerTier, writtenTier, writtenTitle, writtenContent

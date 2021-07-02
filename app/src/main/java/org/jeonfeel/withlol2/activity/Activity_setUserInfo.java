@@ -232,7 +232,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 tv_setSummonerName.setText(summonerName);
                 tv_setSummonerTier.setText("UnRanked");
                 tv_setSummonerLeaguePoints.setText("UnRanked");
-                tv_summonerLevel.setText(summonerLevel);
+                tv_summonerLevel.setText("LV."+summonerLevel);
             }
         }
         public void setBtn_setSearchUserId(){

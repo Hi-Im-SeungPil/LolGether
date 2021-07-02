@@ -128,14 +128,15 @@
     </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_summonerLevel"
+            android:id="@+id/tv_csummonerLevel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout_userInfo"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="10dp"
-            android:text="LV.500"
-            android:textSize="25sp"
+            android:background="#FFFFFFFF"
+            android:textColor="#000000"
+            android:textSize="20sp"
             android:layout_marginLeft="10dp"
             android:fontFamily="@font/nanumroundeb"/>
 
@@ -187,7 +188,8 @@
         android:background="#DDE2FA"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:fontFamily="@font/nanumroundeb"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

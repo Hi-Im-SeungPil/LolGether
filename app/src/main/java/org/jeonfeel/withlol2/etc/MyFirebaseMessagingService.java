@@ -22,10 +22,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         private static final String TAG = "MyFirebaseMsgService";
 
-
+    @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
+            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
     }
 
     public void onNewToken(String token) {
@@ -54,8 +54,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("fcm_default_channel",
-                    "fcm_default_channel",
+            NotificationChannel channel = new NotificationChannel("default_notification_channel",
+                    "default_notification_channel",
                     NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }

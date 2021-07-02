@@ -79,7 +79,7 @@ public class Adapter_duoBoardComment extends RecyclerView.Adapter<Adapter_duoBoa
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        return position;
     }
 
     @Override

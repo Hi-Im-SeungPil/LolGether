@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -24,25 +23,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
-import com.google.firebase.auth.PhoneAuthProvider;
-import com.kakao.sdk.common.KakaoSdk;
-import com.kakao.sdk.user.UserApiClient;
 
 import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.R;
-
-import java.util.concurrent.TimeUnit;
 
 public class Activity_login extends AppCompatActivity {
     private static final String TAG = "GoogleActivity";
@@ -54,7 +43,8 @@ public class Activity_login extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
 
-    private Button btn_googleLogin, btn_phoneLogin;
+    private Button btn_googleLogin;
+
     private LoginButton btn_facebookLogin;
 
     @Override
@@ -67,7 +57,6 @@ public class Activity_login extends AppCompatActivity {
 
         btn_googleLogin = findViewById(R.id.btn_googleLogin);
         btn_facebookLogin = findViewById(R.id.btn_facebookLogin);
-        btn_phoneLogin = findViewById(R.id.btn_phoneLogin);
 
         googleSignIn();
         facebookSignIn();
@@ -78,12 +67,6 @@ public class Activity_login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signIn();
-            }
-        });
-        btn_phoneLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btn_phoneLogin();
             }
         });
 
@@ -106,13 +89,11 @@ public class Activity_login extends AppCompatActivity {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
-
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
                 // ...
             }
-
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
@@ -120,6 +101,7 @@ public class Activity_login extends AppCompatActivity {
             }
         });
     }
+
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
@@ -144,7 +126,6 @@ public class Activity_login extends AppCompatActivity {
                     }
                 });
     }
-
 
     @Override
     public void onStart() {
@@ -197,10 +178,6 @@ public class Activity_login extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void btn_phoneLogin() {
-
     }
 
     public void signOut() {

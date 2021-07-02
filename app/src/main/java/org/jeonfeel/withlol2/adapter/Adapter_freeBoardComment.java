@@ -64,7 +64,7 @@ public class Adapter_freeBoardComment extends RecyclerView.Adapter<Adapter_freeB
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        return position;
     }
 
     @NonNull
