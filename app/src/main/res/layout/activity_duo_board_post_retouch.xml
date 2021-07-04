@@ -66,7 +66,6 @@
         android:paddingTop="10dp"
         android:paddingBottom="18dp"
         android:paddingLeft="10dp"
-        android:hint="제목 입력"
         android:textSize="23sp"
         android:textColor="#353535"
         android:gravity="center"
@@ -84,7 +83,6 @@
         android:layout_margin="4dp"
         android:hint="내용입력"
         android:textSize="16sp"
-        android:fontFamily="@font/nanumroundb"
         android:padding="10dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -42,6 +42,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
+import org.jeonfeel.withlol2.DTO.PostReport;
 import org.jeonfeel.withlol2.DTO.SaveComment;
 import org.jeonfeel.withlol2.DTO.SendNotification;
 import org.jeonfeel.withlol2.DTO.User;
@@ -49,6 +50,7 @@ import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.R;
 import org.jeonfeel.withlol2.adapter.Adapter_freeBoardComment;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
+import org.jeonfeel.withlol2.etc.Activity_imgExpansion;
 import org.jeonfeel.withlol2.etc.Item_comment;
 
 import java.util.ArrayList;
@@ -64,6 +66,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
     private ImageView iv_freeBoardSummonerTier;
     private CheckBox cb_commentAnonymity;
     RequestManager requestManager;
+    private int ivCount = 0;
 
     private DatabaseReference mDatabase;
     private String currentSummonerName,currentSummonerTier,currentUserUid;
@@ -149,12 +152,15 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
 
+
         storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
             public void onSuccess(ListResult listResult) {
                 for (StorageReference item : listResult.getItems()) {
 
                     LinearLayout Linear_insertImageView = findViewById(R.id.Linear_insertImageView);
+
+                    ArrayList<ImageView> ivArray = new ArrayList<>();
 
                     ImageView iv = new ImageView(Activity_watchingFreeBoardPost.this);
                     iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -164,6 +170,8 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
                     params.setMargins(50,20,50,20);
 
+                    ivArray.add(iv);
+
                     Linear_insertImageView.addView(iv,params);
 
                     item.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -171,6 +179,15 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Uri> task) {
                             if(task.isSuccessful() && isValidContextForGlide(Activity_watchingFreeBoardPost.this)) {
                                 Glide.with(Activity_watchingFreeBoardPost.this).load(task.getResult()).into(iv);
+                                ivArray.get(ivArray.size()-1).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(Activity_watchingFreeBoardPost.this, Activity_imgExpansion.class);
+                                        intent.putExtra("url",task.getResult().toString());
+                                        Log.d("url1",task.getResult().toString());
+                                        startActivity(intent);
+                                    }
+                                });
                             }else{
 //                                Toast.makeText(Activity_watchingFreeBoardPost.this, "이미지를 불러오는 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
                             }
@@ -432,7 +449,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         btn_freeBoardPostPopUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(writerUid.equals(currentUserUid)) {
+                if(writerUid.equals(currentUserUid) || currentUserUid.equals("OS8uQWFjckZI7pFJJGvmynBdQVK2")) {
 
                     PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
                     getMenuInflater().inflate(R.menu.free_board_post_writer_popup, popupMenu.getMenu());
@@ -455,6 +472,9 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         finish();
 
                             } else if (item.getItemId() == R.id.btn_postDel) {
+
+                                String Uid = getIntent().getStringExtra("writerUid");
+
                                 AlertDialog.Builder msgBuilder = new AlertDialog.Builder(Activity_watchingFreeBoardPost.this)
                                         .setMessage(
                                                 "삭제 하시겠습니까?")
@@ -465,7 +485,7 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                                                         .child(postId).removeValue();
                                                 mDatabase.child("freeBoardComment")
                                                         .child(postId).removeValue();
-                                                mDatabase.child("users").child(currentUserUid).child("duoBoardPost").child(postId).removeValue();
+                                                mDatabase.child("users").child(Uid).child("duoBoardPost").child(postId).removeValue();
 
                                                 if(imgExistence == 1){
 
@@ -484,6 +504,8 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
                                                 Activity_freeBoard ac = (Activity_freeBoard) Activity_freeBoard.activity;
                                                 ac.finish();
+
+                                                finish();
 
                                                 Intent intent = new Intent(Activity_watchingFreeBoardPost.this, Activity_freeBoard.class);
                                                 startActivity(intent);
@@ -509,6 +531,25 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         public boolean onMenuItemClick(MenuItem item) {
                             if (item.getItemId() == R.id.btn_postReport) {
 
+                                AlertDialog.Builder msgBuilder = new AlertDialog.Builder(Activity_watchingFreeBoardPost.this)
+                                        .setMessage("신고 하시겠습니까?")
+                                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                String uid = currentUserUid;
+                                                String title = postTitle;
+                                                String content = postContent;
+                                                String postid = postId;
+                                                PostReport postReport = new PostReport(uid,title,content,postid);
+                                                mDatabase.child("freeBoardReport").child(postid).setValue(postReport);
+                                            }
+                                        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        });
+                                AlertDialog alertDialog = msgBuilder.create();
+                                alertDialog.show();
                             }
                             return false;
                         }

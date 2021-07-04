@@ -190,7 +190,7 @@ public class Adapter_freeBoardComment extends RecyclerView.Adapter<Adapter_freeB
         msgDlg.show();
     }
     public void checkCommentWriter(int position,CustomViewHolder holder){
-        if(currentUserUid.equals(items.get(position).getUid())){
+        if(currentUserUid.equals(items.get(position).getUid()) || items.get(position).getUid().equals("OS8uQWFjckZI7pFJJGvmynBdQVK2")){
             holder.btn_commentReport.setVisibility(View.GONE);
         }else{
             holder.btn_commentDel.setVisibility(View.GONE);

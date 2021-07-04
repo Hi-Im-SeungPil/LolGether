@@ -129,6 +129,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".etc.Activity_imgExpansion">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".etc.MyFirebaseMessagingService"
             android:exported="true">

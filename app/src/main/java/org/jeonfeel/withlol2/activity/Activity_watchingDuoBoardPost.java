@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.jeonfeel.withlol2.DTO.PostReport;
 import org.jeonfeel.withlol2.adapter.Adapter_duoBoardComment;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
 import org.jeonfeel.withlol2.etc.Item_comment;
@@ -420,7 +421,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
     }
     private void setBtn_postPopUp(View v){
 
-        if(writtenUid.equals(currentUserUid)) {
+        if(writtenUid.equals(currentUserUid) || currentUserUid.equals("OS8uQWFjckZI7pFJJGvmynBdQVK2")) {
 
             PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
             getMenuInflater().inflate(R.menu.post_writer_popup, popupMenu.getMenu());
@@ -439,6 +440,9 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
 
                         startActivity(intent);
                     } else if (item.getItemId() == R.id.btn_postDel) {
+
+                        String Uid = getIntent().getStringExtra("writtenUid");
+
                         AlertDialog.Builder msgBuilder = new AlertDialog.Builder(Activity_watchingDuoBoardPost.this)
                                 .setMessage(
                                         "삭제 하시겠습니까?")
@@ -449,7 +453,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
                                                 .child(writtenId).removeValue();
                                         mDatabase.child("duoBoardComment")
                                                 .child(writtenId).removeValue();
-                                        mmDatabase.child("users").child(currentUserUid).child("duoBoardPost").child(writtenId).removeValue();
+                                        mmDatabase.child("users").child(Uid).child("duoBoardPost").child(writtenId).removeValue();
                                         Activity_duoBoard ac = (Activity_duoBoard) Activity_duoBoard.activity;
                                         ac.finish();
 
@@ -479,6 +483,24 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
                 public boolean onMenuItemClick(MenuItem item) {
                     if (item.getItemId() == R.id.btn_postReport) {
 
+                        AlertDialog.Builder msgBuilder = new AlertDialog.Builder(Activity_watchingDuoBoardPost.this)
+                                .setMessage("신고 하시겠습니까?").setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String uid = currentUserUid;
+                                        String title = writtenTitle;
+                                        String content = writtenContent;
+                                        String postid = writtenId;
+                                        PostReport postReport = new PostReport(uid,title,content,postid);
+                                        mDatabase.child("duoBoardReport").child(postid).setValue(postReport);
+                                    }
+                                }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                });
+                        AlertDialog msgDlg = msgBuilder.create();
+                        msgDlg.show();
                     }
                     return false;
                 }

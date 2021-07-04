@@ -44,7 +44,8 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:textSize="20sp"
-                android:background="@drawable/tv_round"/>
+                android:background="@drawable/tv_round"
+                android:textColor="#000000"/>
             </LinearLayout>
 
             <LinearLayout
@@ -60,7 +61,8 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:background="@drawable/tv_round"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="#000000"/>
             </LinearLayout>
 
             <LinearLayout
@@ -76,7 +78,8 @@
                 android:background="@drawable/tv_round"
                 android:gravity="center"
                 android:padding="8dp"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="#000000"/>
 
             </LinearLayout>
 
@@ -91,11 +94,11 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout_userInfo"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="10dp"
-        android:background="#ffffffff"
+        android:background="#000000"
         android:textSize="25sp"
         android:layout_marginLeft="10dp"
         android:fontFamily="@font/nanumroundeb"
-        android:textColor="#000000"/>
+        android:textColor="#ffffffff"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

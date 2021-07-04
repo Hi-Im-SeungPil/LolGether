@@ -90,6 +90,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_margin="4dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/myFreePostRecyclerView"
         android:layout_width="match_parent"

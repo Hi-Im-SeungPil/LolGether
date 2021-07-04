@@ -147,7 +147,6 @@
                 android:text="다이아 같이 가실분 구합니다."
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:fontFamily="@font/nanumroundeb"
                 android:textColor="#000000"
                 android:textIsSelectable="true"
                 android:layout_marginTop="10dp"/>
@@ -168,7 +167,6 @@
                 android:paddingTop="10dp"
                 android:text="다이아 같이 가실분 구합니다. 보이스톡 가능하구요 실력 좋으신분만 부탁드립니다."
                 android:textSize="15sp"
-                android:fontFamily="@font/nanumroundb"
                 android:textIsSelectable="true"/>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -216,7 +214,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/cb_commentAnonymity"
             app:layout_constraintRight_toLeftOf="@+id/btn_freeBoardWriteComment"
-            android:fontFamily="@font/nanumroundbr"
             android:background="#FFF"
             android:scrollbars = "vertical"
             android:maxLines="6"/>
