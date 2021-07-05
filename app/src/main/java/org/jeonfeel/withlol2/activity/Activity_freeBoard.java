@@ -101,6 +101,14 @@ public class Activity_freeBoard extends AppCompatActivity {
                 finish();
             }
         });
+        btn_freeBoardRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+            }
+        });
     }
     private void mFindViewById(){
         btn_freeBoardBackspace = findViewById(R.id.btn_freeBoardBackspace);

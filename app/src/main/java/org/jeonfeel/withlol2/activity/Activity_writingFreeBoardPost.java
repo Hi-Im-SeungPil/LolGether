@@ -81,6 +81,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
             Toast.makeText(getApplication(), "인터넷 연결을 확인해 주세요!!", Toast.LENGTH_SHORT).show();
             finish();
         }
+        OnCheckPermission();
 
         mFindViewById();
         setPhotoRecyclerView();
@@ -124,8 +125,6 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     }
 
     private void setBtn_addPhoto(){
-
-        OnCheckPermission();
 
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
         //사진을 여러개 선택할수 있도록 한다

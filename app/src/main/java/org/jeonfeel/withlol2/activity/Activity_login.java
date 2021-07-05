@@ -1,14 +1,18 @@
 package org.jeonfeel.withlol2.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -37,6 +41,9 @@ public class Activity_login extends AppCompatActivity {
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
+    int nCurrentPermission = 0;
+    static final int PERMISSIONS_REQUEST = 0x0000001;
+
     private FirebaseAuth mAuth;
 
     private CallbackManager callbackManager;
@@ -54,6 +61,8 @@ public class Activity_login extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+
+        request();
 
         btn_googleLogin = findViewById(R.id.btn_googleLogin);
         btn_facebookLogin = findViewById(R.id.btn_facebookLogin);
@@ -97,6 +106,7 @@ public class Activity_login extends AppCompatActivity {
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
+                Toast.makeText(Activity_login.this, "로그인 도중 문제가 발생하였습니다.", Toast.LENGTH_SHORT).show();
                 // ...
             }
         });
@@ -167,6 +177,7 @@ public class Activity_login extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             loginSuccess(user);
+
                         } else {
 
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -213,5 +224,42 @@ public class Activity_login extends AppCompatActivity {
         } else {
         }
     }
+    public void request(){
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.INTERNET,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSIONS_REQUEST);
+
+            }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch(requestCode) {
+
+            case PERMISSIONS_REQUEST:
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(this, "권한이 설정 되었습니다.", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    // 권한 거절된 경우 처리
+                    Toast.makeText(this, "롤게더 사용을 위해 권한 승인이 꼭 필요합니다.", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+
+        }
+
+    }
 }

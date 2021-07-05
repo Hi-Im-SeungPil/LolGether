@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -52,7 +53,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
     private JSONObject json_userId;
     private JSONArray json_userInfo;
     private int leaguePoint,summonerLevel;
-    private FirebaseAuth mAuth;
+    private FirebaseUser firebaseUser;
 
     private DatabaseReference mDatabase;
 
@@ -75,14 +76,21 @@ public class Activity_setUserInfo extends AppCompatActivity {
         btn_setSearchUserId = findViewById(R.id.btn_setSearchUserId);
         tv_summonerLevel = findViewById(R.id.tv_summonerLevel);
 
-        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        Uid = mAuth.getUid();
-        uEmail = mAuth.getCurrentUser().getEmail();
+        Uid = firebaseUser.getUid();
+        uEmail = firebaseUser.getEmail();
+        if(uEmail == null){
+            uEmail = "null";
+        }
 
-        Log.d("gggg",Uid);
-
+        if(firebaseUser == null){
+            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
+        }else {
+            Log.d("gggg", Uid);
+//            Log.d("gggg", uEmail);
+        }
         btn_setSearchUserId.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,7 +176,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 mDatabase.child("users").child(UID).setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() { // firebase insert
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Intent intent = new Intent(getApplication(), MainActivity.class);
+                        Intent intent = new Intent(Activity_setUserInfo.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                         Toast.makeText(Activity_setUserInfo.this, "소환사 정보 설정이 완료되었습니다!", Toast.LENGTH_SHORT).show();
@@ -257,6 +265,7 @@ public class Activity_setUserInfo extends AppCompatActivity {
                 check = 0;
             }
         }
+
         public void setBtn_start(){
             if(check == 1) {
                 writeNewUser(Uid, uEmail, summonerName, tier, rank, leaguePoint,summonerLevel);

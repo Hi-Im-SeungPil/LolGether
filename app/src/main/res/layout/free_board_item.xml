@@ -89,6 +89,7 @@
                 android:background="@drawable/img_comment"
                 android:layout_gravity="center"
                 android:layout_marginTop="4dp" />
+
             <TextView
                 android:id="@+id/tv_freeBoardItemCommentCount"
                 android:layout_width="18dp"
