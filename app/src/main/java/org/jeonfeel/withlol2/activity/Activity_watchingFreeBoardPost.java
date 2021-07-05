@@ -152,7 +152,6 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl("gs://lolgether.appspot.com").child(postId);
 
-
         storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
             public void onSuccess(ListResult listResult) {
@@ -321,7 +320,18 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String token = snapshot.child("token").getValue(String.class);
-                            SendNotification.sendNotification(token, postTitle, "새로운 댓글이 달렸습니다.");
+                            Integer checkNotificationStatus = snapshot.child("notification").getValue(int.class);
+
+                            int writerNotificationStatus = 0;
+
+                            if(checkNotificationStatus != null){
+                                writerNotificationStatus = checkNotificationStatus;
+                            }
+
+                            if(writerNotificationStatus != 0 && !currentUserUid.equals(writerUid) ) {
+                                SendNotification.sendNotification(token, postTitle, "새로운 댓글이 달렸습니다.");
+                            }
+
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {

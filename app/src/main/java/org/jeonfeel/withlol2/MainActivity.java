@@ -30,6 +30,7 @@ import android.widget.ToggleButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +44,7 @@ import org.jeonfeel.withlol2.activity.Activity_freeBoard;
 import org.jeonfeel.withlol2.activity.Activity_login;
 import org.jeonfeel.withlol2.activity.Activity_myPost;
 import org.jeonfeel.withlol2.activity.Activity_searchingSummoner;
+import org.jeonfeel.withlol2.activity.Activity_setUserInfo;
 import org.jeonfeel.withlol2.activity.Activity_summonerChange;
 import org.jeonfeel.withlol2.etc.CheckNetwork;
 import org.json.JSONArray;
@@ -55,15 +57,22 @@ public class MainActivity extends AppCompatActivity {
 
 
     private EditText et_idSearch;
+
     private Button btn_idSearch;
+
     private ImageView img_userTier, iv_mainPopup;
+
     private TextView tv_summonerName, tv_summonerRank, tv_summonerLeaguePoints,tv_summonerLevel;
+
     private LinearLayout linear_soloRankUnRanked, linear_soloRankIron, linear_soloRankBronze, linear_soloRankSilver,
             linear_soloRankGold, linear_soloRankPlatinum, linear_soloRankDiamond,linear_freeBoard;
+
     private TextView tv_summonerUpdate;
+
     private LinearLayout linear_freeRankUnRanked, linear_freeRankIron, linear_freeRankBronze, linear_freeRankSilver,
             linear_freeRankGold, linear_freeRankPlatinum, linear_freeRankDiamond, linear_freeRankMaster,
             linear_freeRankGrandMaster, linear_freeRankChallenger,linear_normalGame;
+
     private ToggleButton tog_freeRank,tog_soloRank;
     private LinearLayout mainSoloBoardGroup,mainFreeRankBoardGroup;
 
@@ -82,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
     private JSONObject json_userId;
     private JSONArray json_userInfo;
     private String resultId;
-
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -161,8 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    public void mFindViewById() {
+    private void mFindViewById() {
 
         et_idSearch = findViewById(R.id.et_idSearch);
         btn_idSearch = findViewById(R.id.btn_idSearch);
@@ -201,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
     //전적검색 할 클래스에 찾을 닉네임 전송
 
-    public void parseUserId(EditText et_idSearch) {
+    private void parseUserId(EditText et_idSearch) {
         String id = et_idSearch.getText().toString();
         Intent intent = new Intent(this, Activity_searchingSummoner.class);
         intent.putExtra("userId", id);
@@ -215,53 +222,72 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                currentSummonerName = snapshot.child("summonerName").getValue(String.class);
-                currentSummonerTier = snapshot.child("tier").getValue(String.class);
-                currentUserRank = snapshot.child("rank").getValue(String.class);
-                currentUserNotificationStatus = snapshot.child("notification").getValue(int.class);
-                currentUserLevel = snapshot.child("summonerLevel").getValue(int.class);
-                currentUserLeaguePoints = snapshot.child("leaguePoint").getValue(int.class);
+                if(snapshot.getValue() != null) {
+                    currentSummonerName = snapshot.child("summonerName").getValue(String.class);
+                    currentSummonerTier = snapshot.child("tier").getValue(String.class);
+                    currentUserRank = snapshot.child("rank").getValue(String.class);
+                    Integer checkNoti = snapshot.child("notification").getValue(int.class);
+                    Integer checkUserLevel = snapshot.child("summonerLevel").getValue(int.class);
+                    Integer checkUserLeaguePoint = snapshot.child("leaguePoint").getValue(int.class);
+                    if (checkNoti != null) {
+                        currentUserNotificationStatus = checkNoti;
+                    }
+                    if (checkUserLevel != null) {
+                        currentUserLevel = checkUserLevel;
+                    }
+                    if (checkUserLevel != null) {
+                        currentUserLeaguePoints = checkUserLeaguePoint;
+                    }
 
-                tv_summonerLevel.setText("LV."+currentUserLevel);
-                tv_summonerName.setText(currentSummonerName);
-                if(currentSummonerTier.equals("UnRanked")){
-                    tv_summonerRank.setText("언 랭");
-                    tv_summonerLeaguePoints.setText("챌린저 가즈아!");
-                }else {
-                    tv_summonerRank.setText(currentSummonerTier + " " + currentUserRank);
-                    tv_summonerLeaguePoints.setText(currentUserLeaguePoints + " 점");
-                }
-                switch (currentSummonerTier) {
-                    case "UnRanked":
-                        img_userTier.setImageResource(R.drawable.unranked);
-                        break;
-                    case "IRON":
-                        img_userTier.setImageResource(R.drawable.iron);
-                        break;
-                    case "BRONZE":
-                        img_userTier.setImageResource(R.drawable.bronze);
-                        break;
-                    case "SILVER":
-                        img_userTier.setImageResource(R.drawable.silver);
-                        break;
-                    case "GOLD":
-                        img_userTier.setImageResource(R.drawable.gold);
-                        break;
-                    case "PLATINUM":
-                        img_userTier.setImageResource(R.drawable.ple);
-                        break;
-                    case "DIAMOND":
-                        img_userTier.setImageResource(R.drawable.dia);
-                        break;
-                    case "MASTER":
-                        img_userTier.setImageResource(R.drawable.master);
-                        break;
-                    case "GRANDMASTER":
-                        img_userTier.setImageResource(R.drawable.gm);
-                        break;
-                    case "CHALLENGER":
-                        img_userTier.setImageResource(R.drawable.ch);
-                        break;
+                    tv_summonerLevel.setText("LV." + currentUserLevel);
+                    tv_summonerName.setText(currentSummonerName);
+                    if (currentSummonerTier.equals("UnRanked")) {
+                        tv_summonerRank.setText("언 랭");
+                        tv_summonerLeaguePoints.setText("챌린저 가즈아!");
+                    } else {
+                        tv_summonerRank.setText(currentSummonerTier + " " + currentUserRank);
+                        tv_summonerLeaguePoints.setText(currentUserLeaguePoints + " 점");
+                    }
+                    switch (currentSummonerTier) {
+                        case "UnRanked":
+                            img_userTier.setImageResource(R.drawable.unranked);
+                            break;
+                        case "IRON":
+                            img_userTier.setImageResource(R.drawable.iron);
+                            break;
+                        case "BRONZE":
+                            img_userTier.setImageResource(R.drawable.bronze);
+                            break;
+                        case "SILVER":
+                            img_userTier.setImageResource(R.drawable.silver);
+                            break;
+                        case "GOLD":
+                            img_userTier.setImageResource(R.drawable.gold);
+                            break;
+                        case "PLATINUM":
+                            img_userTier.setImageResource(R.drawable.ple);
+                            break;
+                        case "DIAMOND":
+                            img_userTier.setImageResource(R.drawable.dia);
+                            break;
+                        case "MASTER":
+                            img_userTier.setImageResource(R.drawable.master);
+                            break;
+                        case "GRANDMASTER":
+                            img_userTier.setImageResource(R.drawable.gm);
+                            break;
+                        case "CHALLENGER":
+                            img_userTier.setImageResource(R.drawable.ch);
+                            break;
+                    }
+                }else{
+
+                    mAuth.signOut();
+                    Toast.makeText(MainActivity.this, "로그인 도중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, Activity_login.class);
+                    startActivity(intent);
+                    finish();
+
                 }
             }
             @Override
@@ -269,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     //현재 로그인한 사용자의 Uid
     public static String getCurrentUserUid() {
         return currentUserUid;
@@ -580,4 +607,5 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
 }

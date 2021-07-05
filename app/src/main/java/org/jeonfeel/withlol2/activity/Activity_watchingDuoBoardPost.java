@@ -305,8 +305,13 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     token = snapshot.child("token").getValue(String.class);
-                    int writerNotificationStatus = snapshot.child("notification").getValue(int.class);
-                    if(writerNotificationStatus != 0) {
+                    Integer checkNotificationStatus = snapshot.child("notification").getValue(int.class);
+                    int writerNotificationStatus = 0;
+                    if(checkNotificationStatus != null){
+                        writerNotificationStatus = checkNotificationStatus;
+                    }
+                    if(writerNotificationStatus != 0 && !currentUserUid.equals(writtenUid)
+                     ) {
                         SendNotification.sendNotification(token, writtenTitle, "새로운 댓글이 달렸습니다.");
                     }
                 }

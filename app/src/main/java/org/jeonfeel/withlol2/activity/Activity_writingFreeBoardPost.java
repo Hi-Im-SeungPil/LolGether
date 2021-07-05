@@ -130,7 +130,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
         //사진을 여러개 선택할수 있도록 한다
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"),  PICK_FROM_ALBUM);
+        startActivityForResult(Intent.createChooser(intent, "사진을 선택하세요"),  PICK_FROM_ALBUM);
 
     }
     private void setPhotoRecyclerView(){ // 사진 띄어놓는 리사이클러뷰

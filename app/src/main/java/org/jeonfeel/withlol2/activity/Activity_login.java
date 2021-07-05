@@ -33,6 +33,11 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.jeonfeel.withlol2.MainActivity;
 import org.jeonfeel.withlol2.R;
@@ -61,6 +66,7 @@ public class Activity_login extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+
 
         request();
 
@@ -143,6 +149,7 @@ public class Activity_login extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         loginAlready(currentUser);
+
     }
 
     @Override
@@ -208,21 +215,36 @@ public class Activity_login extends AppCompatActivity {
     }
     private void loginSuccess(FirebaseUser user) {
 
-        if (user != null) {
-            Intent intent = new Intent(this, Activity_setUserInfo.class);
-            startActivity(intent);
-            finish();
-        } else {
+        DatabaseReference mDataBase = FirebaseDatabase.getInstance().getReference();
+        if(user != null) {
+            String uid = user.getUid();
+            mDataBase.child("users").orderByKey().equalTo(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue() == null) {
+                        Intent intent = new Intent(Activity_login.this, Activity_setUserInfo.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Intent intent = new Intent(Activity_login.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
         }
     }
     private void loginAlready(FirebaseUser user) {
 
-        if (user != null) {
-            Intent intent = new Intent(this, MainActivity.class);
+        if(user != null) {
+            Intent intent = new Intent(Activity_login.this, MainActivity.class);
             startActivity(intent);
             finish();
-        } else {
         }
+
     }
     public void request(){
 
@@ -256,10 +278,7 @@ public class Activity_login extends AppCompatActivity {
                     // 권한 거절된 경우 처리
                     Toast.makeText(this, "롤게더 사용을 위해 권한 승인이 꼭 필요합니다.", Toast.LENGTH_SHORT).show();
                 }
-
                 break;
-
         }
-
     }
 }
