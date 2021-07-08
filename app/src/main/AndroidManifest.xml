@@ -137,8 +137,6 @@
             </intent-filter>
         </activity>
 
-
-
         <service
             android:name=".etc.MyFirebaseMessagingService"
             android:exported="true">

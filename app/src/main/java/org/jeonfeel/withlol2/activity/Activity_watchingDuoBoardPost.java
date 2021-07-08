@@ -25,6 +25,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -497,7 +498,12 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
                                         String content = writtenContent;
                                         String postid = writtenId;
                                         PostReport postReport = new PostReport(uid,title,content,postid);
-                                        mDatabase.child("duoBoardReport").child(postid).setValue(postReport);
+                                        mmDatabase.child("duoBoardReport").child(postid).setValue(postReport).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(Activity_watchingDuoBoardPost.this, "신고가 접수되었습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
                                 }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                     @Override

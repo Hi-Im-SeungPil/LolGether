@@ -551,7 +551,12 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
                                                 String content = postContent;
                                                 String postid = postId;
                                                 PostReport postReport = new PostReport(uid,title,content,postid);
-                                                mDatabase.child("freeBoardReport").child(postid).setValue(postReport);
+                                                mDatabase.child("freeBoardReport").child(postid).setValue(postReport).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Toast.makeText(Activity_watchingFreeBoardPost.this, "신고가 접수 되었습니다.", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
                                             }
                                         }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                             @Override

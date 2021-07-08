@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 
 import org.jeonfeel.withlol2.etc.Item_comment;
@@ -41,7 +43,6 @@ public class Adapter_duoBoardComment extends RecyclerView.Adapter<Adapter_duoBoa
 
         public CustomViewHolder(@NonNull View view) {
             super(view);
-
             this.img_commentSummonerTier = view.findViewById(R.id.img_commentSummonerTier);
             this.tv_commentSummonerName = view.findViewById(R.id.tv_commentSummonerName);
             this.tv_commentContent = view.findViewById(R.id.tv_commentContent);
@@ -143,7 +144,9 @@ public class Adapter_duoBoardComment extends RecyclerView.Adapter<Adapter_duoBoa
                 break;
         }
     }
-    public void setCommentWrittenDate(int position,CustomViewHolder holder,long currentTime){
+
+    private void setCommentWrittenDate(int position,CustomViewHolder holder,long currentTime){
+
         final int SEC = 60;
         final int MIN = 60;
         final int HOUR = 24;
@@ -170,7 +173,7 @@ public class Adapter_duoBoardComment extends RecyclerView.Adapter<Adapter_duoBoa
 
         holder.tv_commentWriteDate.setText(dateText);
     }
-    public void setBtn_commentDel(int position){
+    private void setBtn_commentDel(int position){
 
         AlertDialog.Builder msgBuilder = new AlertDialog.Builder(context).setMessage("삭제 하시겠습니까?")
                 .setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -189,22 +192,42 @@ public class Adapter_duoBoardComment extends RecyclerView.Adapter<Adapter_duoBoa
                 });
         AlertDialog msgDlg = msgBuilder.create();
         msgDlg.show();
-
-
     }
-    public void checkCommentWriter(int position,CustomViewHolder holder){
+
+    private void checkCommentWriter(int position,CustomViewHolder holder){
+
         if(currentUserUid.equals(items.get(position).getUid()) || items.get(position).getUid().equals("OS8uQWFjckZI7pFJJGvmynBdQVK2")){
             holder.btn_commentReport.setVisibility(View.GONE);
         }else{
             holder.btn_commentDel.setVisibility(View.GONE);
         }
     }
-    public void setBtn_commentReport(int position){
-        String uid = items.get(position).getUid();
-        String commentId = items.get(position).getCommentId();
-        String commentContent = items.get(position).getCommentContent();
-        SaveCommentReport itemSaveCommentReport = new SaveCommentReport(commentId,uid,commentContent);
-        mmDatabase.child("duoBoardCommentReport").child(commentId).setValue(itemSaveCommentReport);
-    }
 
+    private void setBtn_commentReport(int position){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setMessage("신고 하시겠습니까?")
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String uid = items.get(position).getUid();
+                        String commentId = items.get(position).getCommentId();
+                        String commentContent = items.get(position).getCommentContent();
+
+                        SaveCommentReport itemSaveCommentReport = new SaveCommentReport(commentId,uid,commentContent);
+                        mmDatabase.child("duoBoardCommentReport").child(commentId).setValue(itemSaveCommentReport).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(context, "신고가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }

@@ -12,4 +12,28 @@ public class SaveCommentReport {
         this.WriterUid = writerUid;
         this.commentContent = commentContent;
     }
+
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
+    }
+
+    public String getWriterUid() {
+        return WriterUid;
+    }
+
+    public void setWriterUid(String writerUid) {
+        WriterUid = writerUid;
+    }
+
+    public String getCommentContent() {
+        return commentContent;
+    }
+
+    public void setCommentContent(String commentContent) {
+        this.commentContent = commentContent;
+    }
 }

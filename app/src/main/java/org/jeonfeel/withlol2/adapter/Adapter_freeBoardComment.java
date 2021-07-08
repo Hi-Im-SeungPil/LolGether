@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 
 import org.jeonfeel.withlol2.etc.Item_comment;
@@ -197,11 +199,29 @@ public class Adapter_freeBoardComment extends RecyclerView.Adapter<Adapter_freeB
         }
     }
     public void setBtn_commentReport(int position){
-        String uid = items.get(position).getUid();
-        String commentId = items.get(position).getCommentId();
-        String commentContent = items.get(position).getCommentContent();
-        SaveCommentReport itemSaveCommentReport = new SaveCommentReport(commentId,uid,commentContent);
-        mDatabase.child("freeBoardCommentReport").child(commentId).setValue(itemSaveCommentReport);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setMessage("신고 하시겠습니까?")
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String uid = items.get(position).getUid();
+                        String commentId = items.get(position).getCommentId();
+                        String commentContent = items.get(position).getCommentContent();
+                        SaveCommentReport itemSaveCommentReport = new SaveCommentReport(commentId,uid,commentContent);
+                        mDatabase.child("freeBoardCommentReport").child(commentId).setValue(itemSaveCommentReport).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(context, "신고가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 }
