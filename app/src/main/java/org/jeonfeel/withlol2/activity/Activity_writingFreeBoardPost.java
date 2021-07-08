@@ -81,6 +81,7 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
             Toast.makeText(getApplication(), "인터넷 연결을 확인해 주세요!!", Toast.LENGTH_SHORT).show();
             finish();
         }
+
         OnCheckPermission();
 
         mFindViewById();
@@ -126,11 +127,18 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
     private void setBtn_addPhoto(){
 
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         //사진을 여러개 선택할수 있도록 한다
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "사진을 선택하세요"),  PICK_FROM_ALBUM);
+        if(intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(Intent.createChooser(intent,"앨범 선택"), PICK_FROM_ALBUM);
+        }else{
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+            intent.setType("image/*");
+            startActivityForResult(intent,PICK_FROM_ALBUM);
+        }
 
     }
     private void setPhotoRecyclerView(){ // 사진 띄어놓는 리사이클러뷰
@@ -156,14 +164,15 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                }
 
                photoRecyclerView.setVisibility(View.GONE);
+               Toast.makeText(this, "zz", Toast.LENGTH_SHORT).show();
 
                if(clipData.getItemCount() > 10){
                    Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
 
                    if(photoList != null) {
                        photoList.clear();
-                   }
-
+                   }photoRecyclerView.setVisibility(View.GONE);
+                   Toast.makeText(this, "zz2", Toast.LENGTH_SHORT).show();
                    imgExistence = 0;
                    return;
                }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
@@ -183,7 +192,6 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                }
            }
             adapter = new Adapter_freeBoardPhoto(photoList,this,"writing");
-            Log.d("qqqq",adapter.getItemCount()+"");
             photoRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
