@@ -157,22 +157,15 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
 
            if (data.getClipData() != null) {
                ClipData clipData = data.getClipData();
-               imgExistence = 0;
-
-               if(photoList != null) {
-                   photoList.clear();
-               }
-
-               photoRecyclerView.setVisibility(View.GONE);
-               Toast.makeText(this, "zz", Toast.LENGTH_SHORT).show();
 
                if(clipData.getItemCount() > 10){
                    Toast.makeText(this, "사진은 10장까지만 가능합니다.", Toast.LENGTH_SHORT).show();
 
                    if(photoList != null) {
                        photoList.clear();
-                   }photoRecyclerView.setVisibility(View.GONE);
-                   Toast.makeText(this, "zz2", Toast.LENGTH_SHORT).show();
+                   }
+
+                   photoRecyclerView.setVisibility(View.GONE);
                    imgExistence = 0;
                    return;
                }else if(clipData.getItemCount() > 0 && clipData.getItemCount() <= 10){
@@ -190,10 +183,16 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
                    photoRecyclerView.setVisibility(View.VISIBLE);
                    imgExistence = 1;
                }
+               adapter = new Adapter_freeBoardPhoto(photoList,this,"writing");
+               photoRecyclerView.setAdapter(adapter);
+               adapter.notifyDataSetChanged();
+           }else{
+               if(photoList != null) {
+                   photoList.clear();
+               }
+               photoRecyclerView.setVisibility(View.GONE);
+               Toast.makeText(this, "앨범에서 사진을 선택해 주세요.", Toast.LENGTH_SHORT).show();
            }
-            adapter = new Adapter_freeBoardPhoto(photoList,this,"writing");
-            photoRecyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
         }
     }
     // 글 작성 완료 버튼
@@ -383,10 +382,10 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
     @Override
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
 
-            case REQUEST_CODE :
+            case REQUEST_CODE:
 
                 if (grantResults.length > 0
 
