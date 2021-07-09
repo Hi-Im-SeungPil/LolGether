@@ -1,6 +1,7 @@
 package org.jeonfeel.withlol2.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
@@ -125,12 +126,13 @@ public class Activity_writingFreeBoardPost extends AppCompatActivity {
         cb_anonymity = findViewById(R.id.cb_modifyAnonymity);
     }
 
+    @SuppressLint({"IntentReset", "QueryPermissionsNeeded"})
     private void setBtn_addPhoto(){
 
         Intent intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         //사진을 여러개 선택할수 있도록 한다
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         if(intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(Intent.createChooser(intent,"앨범 선택"), PICK_FROM_ALBUM);
         }else{

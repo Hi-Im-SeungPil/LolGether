@@ -176,6 +176,7 @@ public class Activity_duoBoard extends AppCompatActivity {
                 if(mItem.size() > 0){
                     tv_noItem.setVisibility(View.GONE);
                 }else{
+                    tv_noItem.setVisibility(View.VISIBLE);
                     tv_noItem.setText("게시물이 없습니다. \n\n첫 게시물을 작성해 보세요!");
                 }
             }
@@ -241,11 +242,14 @@ public class Activity_duoBoard extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
         progressDialog.dismiss();
     }
+
     private void getLastKey(){
+
         mDatabase.child(selectedPosition)
                 .orderByChild("id")
                 .limitToFirst(1)
@@ -262,7 +266,9 @@ public class Activity_duoBoard extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
     }
+
     private void setRecyclerView(){
         final RecyclerView duoBoardRecyclerView = (RecyclerView) findViewById(R.id.duoBoardRecyclerView); // 리사이 클러뷰 세팅
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -311,6 +317,7 @@ public class Activity_duoBoard extends AppCompatActivity {
             }
         });
     }
+
     private void getBoardChild(){
         switch (boardTitle){
             case "솔로랭크 배치" :
@@ -393,6 +400,7 @@ public class Activity_duoBoard extends AppCompatActivity {
         intent.putExtra("boardTitle",boardTitle);
         startActivity(intent);
     }
+
     private void setBtn_duoBoardRefresh(){
 
         Intent intent = getIntent();
@@ -421,6 +429,7 @@ public class Activity_duoBoard extends AppCompatActivity {
                     }
                     startCheck++;
                 }
+
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
                 }

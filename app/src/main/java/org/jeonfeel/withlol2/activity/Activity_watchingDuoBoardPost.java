@@ -158,6 +158,20 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
 
     private void getPostInfo(){
 
+        mDatabase.child(selectedPosition).child(writtenId).child("title").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.getValue(String.class) == null){
+                    Toast.makeText(Activity_watchingDuoBoardPost.this, "삭제된 글 입니다. 새로고침 해주세요", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
         Intent intent = getIntent();
         writtenId = intent.getStringExtra("writtenId");
         writtenUid = intent.getStringExtra("writtenUid");

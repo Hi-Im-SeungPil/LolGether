@@ -9,15 +9,16 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/lolgether_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/lolgether_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
 
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
 
-        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -25,7 +26,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_searchingSummoner">
+        <activity android:name=".activity.Activity_searchingSummoner"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -33,7 +35,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_setUserInfo">
+        <activity android:name=".activity.Activity_setUserInfo"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -41,7 +44,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_login">
+        <activity android:name=".activity.Activity_login"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,7 +53,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_duoBoard">
+        <activity android:name=".activity.Activity_duoBoard"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -57,7 +62,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_writingDuoBoardPost">
+        <activity android:name=".activity.Activity_writingDuoBoardPost"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -65,7 +71,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_watchingDuoBoardPost">
+        <activity android:name=".activity.Activity_watchingDuoBoardPost"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -73,7 +80,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_duoBoardPostRetouch">
+        <activity android:name=".activity.Activity_duoBoardPostRetouch"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -81,7 +89,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_summonerChange">
+        <activity android:name=".activity.Activity_summonerChange"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -89,7 +98,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_myPost">
+        <activity android:name=".activity.Activity_myPost"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -97,7 +107,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_freeBoard">
+        <activity android:name=".activity.Activity_freeBoard"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -105,7 +116,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_writingFreeBoardPost">
+        <activity android:name=".activity.Activity_writingFreeBoardPost"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -113,7 +125,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_watchingFreeBoardPost">
+        <activity android:name=".activity.Activity_watchingFreeBoardPost"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -121,7 +134,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.Activity_ModifyFreeBoardPost">
+        <activity android:name=".activity.Activity_ModifyFreeBoardPost"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -129,7 +143,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".etc.Activity_imgExpansion">
+        <activity android:name=".etc.Activity_imgExpansion"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -176,7 +191,5 @@
         </activity>
 
     </application>
-
-
 
 </manifest>
