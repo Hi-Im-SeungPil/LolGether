@@ -110,12 +110,14 @@ public class Activity_freeBoard extends AppCompatActivity {
             }
         });
     }
+
     private void mFindViewById(){
         btn_freeBoardBackspace = findViewById(R.id.btn_freeBoardBackspace);
         btn_freeBoardRefresh = findViewById(R.id.btn_freeBoardRefresh);
         fab_freeBoardWrite = findViewById(R.id.fab_freeBoardWrite);
         tv_noItem = findViewById(R.id.tv_noItem);
     }
+
     private void setRecyclerView(){
         freeBoardRecyclerView = (RecyclerView) findViewById(R.id.freeBoardRecyclerView);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -167,6 +169,7 @@ public class Activity_freeBoard extends AppCompatActivity {
             }
         });
     }
+
     private void setFab_freeBoardWrite(){
         Intent intent = new Intent(getApplication(), Activity_writingFreeBoardPost.class);
         startActivity(intent);
@@ -229,9 +232,11 @@ public class Activity_freeBoard extends AppCompatActivity {
                             for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                                 saveFreeBoardPost = dataSnapshot.getValue(SaveFreeBoardPost.class);
                                 id = saveFreeBoardPost.getId();
+
                                 if(check == 1){
                                     pagingPostId = id;
                                 }
+
                                 String uid = saveFreeBoardPost.getUid();
                                 String summonerName = saveFreeBoardPost.getSummonerName();
                                 String summonerTier = saveFreeBoardPost.getSummonerTier();

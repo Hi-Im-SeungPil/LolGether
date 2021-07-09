@@ -25,7 +25,9 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -92,6 +94,7 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mmDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference("duoBoard/"+boardChild);
 
         activity = Activity_watchingDuoBoardPost.this;
 
@@ -99,7 +102,6 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
 
         getCurrentUserInfo();
         getPostInfo();
-        mDatabase = FirebaseDatabase.getInstance().getReference("duoBoard/"+boardChild);
         setWritten();
         getLastKey();
         setRecyclerView();
@@ -153,24 +155,8 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
         btn_postPopUp = findViewById(R.id.btn_postPopUp);
         btn_writerRecord = findViewById(R.id.btn_writerRecord);
         btn_freeBoardPostPopUp = findViewById(R.id.btn_freeBoardPostPopUp);
-
     }
-
     private void getPostInfo(){
-
-        mDatabase.child(selectedPosition).child(writtenId).child("title").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.getValue(String.class) == null){
-                    Toast.makeText(Activity_watchingDuoBoardPost.this, "삭제된 글 입니다. 새로고침 해주세요", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
 
         Intent intent = getIntent();
         writtenId = intent.getStringExtra("writtenId");
@@ -186,6 +172,23 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
 
         getBoardChild();
         tv_boardTitle.setText(boardTitle);
+
+        mmDatabase.child("duoBoard")
+                .child(boardChild)
+                .child(selectedPosition)
+                .child(writtenId)
+                .child("title").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.getValue(String.class) == null){
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
     }
 
@@ -434,11 +437,11 @@ public class Activity_watchingDuoBoardPost extends AppCompatActivity {
                 boardChild = "freechallenger";
                 break;
             case "일반 / 기타 모드" :
-                boardChild = "nomalgame";
-                selectedPosition = "같이하실분";
+                boardChild = "normalgame";
                 break;
         }
     }
+
     private void setBtn_postPopUp(View v){
 
         if(writtenUid.equals(currentUserUid) || currentUserUid.equals("OS8uQWFjckZI7pFJJGvmynBdQVK2")) {

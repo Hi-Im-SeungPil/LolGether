@@ -134,20 +134,6 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
 
     private void getPostInfo(){
 
-        mDatabase.child("freeBoard").child(postId).child("title").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.getValue(String.class) == null){
-                    Toast.makeText(Activity_watchingFreeBoardPost.this, "삭제된 글 입니다. 새로고침 해주세요", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
         Intent intent = getIntent();
         postId = intent.getStringExtra("postId");
         writerUid = intent.getStringExtra("writerUid");
@@ -158,6 +144,21 @@ public class Activity_watchingFreeBoardPost extends AppCompatActivity {
         postDate = intent.getLongExtra("postDate",0);
         commentCount = intent.getIntExtra("commentCount",0);
         imgExistence = intent.getIntExtra("imgExistence",0);
+
+        mDatabase.child("freeBoard").child(postId).child("title").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.getValue(String.class) == null){
+                    Toast.makeText(Activity_watchingFreeBoardPost.this, "삭제된 게시물 입니다. 새로고침 해주세요", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 
